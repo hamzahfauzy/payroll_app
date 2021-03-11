@@ -22,28 +22,25 @@ class EmployeePeriodController extends Controller
      */
     public function index()
     {
-        $period = isset($_GET['period'])?$_GET['period']:0;
-        $periods = Period::get()->pluck('name','id');
-        if($period)
-        {
+        $period = isset($_GET['period']) ? $_GET['period'] : 0;
+        $periods = Period::get()->pluck('name', 'id');
+        if ($period) {
             // generate record by period
             $employees = Employee::get();
-            foreach($employees as $employee)
-            {
-                $check = EmployeePeriod::where('period_id',$period)->where('employee_id',$employee->id)->exists();
-                if(!$check)
+            foreach ($employees as $employee) {
+                $check = EmployeePeriod::where('period_id', $period)->where('employee_id', $employee->id)->exists();
+                if (!$check)
                     EmployeePeriod::create([
                         'employee_id' => $employee->id,
                         'period_id'   => $period,
                         'status'      => 'Belum Dibayar'
                     ]);
-                
             }
         }
 
-        $employeePeriods = EmployeePeriod::where('period_id',$period)->paginate();
+        $employeePeriods = EmployeePeriod::where('period_id', $period)->paginate();
 
-        return view('employee-period.index', compact('employeePeriods','period','periods'))
+        return view('employee-period.index', compact('employeePeriods', 'period', 'periods'))
             ->with('i', (request()->input('page', 1) - 1) * $employeePeriods->perPage());
     }
 
@@ -60,39 +57,33 @@ class EmployeePeriodController extends Controller
 
     public function sallaryPanel(Request $request, EmployeePeriod $employeePeriod)
     {
-        if($request->method() == 'POST')
-        {
+        if ($request->method() == 'POST') {
             $refs = Sallary::get();
-            foreach($refs as $ref)
-            {
-                $check = EmployeeSallary::where('period_id',$employeePeriod->period_id)
-                                        ->where('employee_id',$employeePeriod->employee_id)
-                                        ->where('sallary_id',$ref->id);
-                if($check->exists())
-                {
+            foreach ($refs as $ref) {
+                $check = EmployeeSallary::where('period_id', $employeePeriod->period_id)
+                    ->where('employee_id', $employeePeriod->employee_id)
+                    ->where('sallary_id', $ref->id);
+                if ($check->exists()) {
                     $check->first()->update([
                         'amount' => $request->sallary[$ref->id]
                     ]);
-                }
-                else
+                } else
                     EmployeeSallary::create([
                         'period_id' => $employeePeriod->period_id,
                         'employee_id' => $employeePeriod->employee_id,
                         'sallary_id' => $ref->id,
                         'amount' => $request->sallary[$ref->id]
                     ]);
-
             }
-            return redirect()->route('employee-periods.index',['period'=>$employeePeriod->period_id])
-                ->with('success', 'Gaji Karyawan '.$employeePeriod->employee->name.' berhasil diupdate');
+            return redirect()->route('employee-periods.index', ['period' => $employeePeriod->period_id])
+                ->with('success', 'Gaji Karyawan ' . $employeePeriod->employee->name . ' berhasil diupdate');
         }
         $refs = Sallary::get();
-        foreach($refs as $ref)
-        {
-            $check = EmployeeSallary::where('period_id',$employeePeriod->period_id)
-                                    ->where('employee_id',$employeePeriod->employee_id)
-                                    ->where('sallary_id',$ref->id)->exists();
-            if(!$check)
+        foreach ($refs as $ref) {
+            $check = EmployeeSallary::where('period_id', $employeePeriod->period_id)
+                ->where('employee_id', $employeePeriod->employee_id)
+                ->where('sallary_id', $ref->id)->exists();
+            if (!$check)
                 EmployeeSallary::create([
                     'period_id' => $employeePeriod->period_id,
                     'employee_id' => $employeePeriod->employee_id,
@@ -102,20 +93,19 @@ class EmployeePeriodController extends Controller
         }
 
         // sallary group
-        $sallaries = EmployeeSallary::where('period_id',$employeePeriod->period_id)
-                                    ->where('employee_id',$employeePeriod->employee_id)->get();
+        $sallaries = EmployeeSallary::where('period_id', $employeePeriod->period_id)
+            ->where('employee_id', $employeePeriod->employee_id)->get();
 
         $bonus = [];
         $potongan = [];
-        foreach($sallaries as $sallary)
-        {
-            if($sallary->sallary->sallary_type=='Bonus')
+        foreach ($sallaries as $sallary) {
+            if ($sallary->sallary->sallary_type == 'Bonus')
                 $bonus[] = $sallary;
             else
                 $potongan[] = $sallary;
         }
 
-        return view('employee-period.sallary-panel', compact('employeePeriod','bonus','potongan'));
+        return view('employee-period.sallary-panel', compact('employeePeriod', 'bonus', 'potongan'));
     }
 
     /**

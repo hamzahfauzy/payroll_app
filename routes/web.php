@@ -19,30 +19,31 @@ use App\Http\Controllers\EmployeePeriodController;
 |
 */
 
-Route::middleware('installed')->group(function(){
+Route::middleware('installed')->group(function () {
     Auth::routes([
         'register' => false,
-        'reset' => false, 
+        'reset' => false,
         'verify' => false
     ]);
 
-    Route::middleware('auth')->group(function(){
+    Route::middleware('auth')->group(function () {
         Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-        Route::get('edit-profile', [App\Http\Controllers\HomeController::class, 'index'])->name('edit-profile');
-        
-        Route::middleware('admin')->group(function(){
+        Route::match(['get', 'post'], 'edit-profile', [App\Http\Controllers\HomeController::class, 'edit_profile'])->name('edit-profile');
+
+        Route::middleware('admin')->group(function () {
             Route::resource('positions', PositionController::class);
             Route::resource('employees', EmployeeController::class);
             Route::resource('allowances', AllowanceController::class);
             Route::resource('sallaries', SallaryController::class);
             Route::resource('periods', PeriodController::class);
-            Route::match(['get','post'],'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
+            Route::match(['get', 'post'], 'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
             Route::resource('employee-periods', EmployeePeriodController::class);
         });
     });
-    
+
+    Route::get("payroll/{employeePeriod}", [App\Http\Controllers\HomeController::class, 'payroll'])->name('payroll');
 });
 
-Route::middleware('installation')->group(function(){
-    Route::match(['get','post'], 'installation', [App\Http\Controllers\HomeController::class, 'installation'])->name('installation');
+Route::middleware('installation')->group(function () {
+    Route::match(['get', 'post'], 'installation', [App\Http\Controllers\HomeController::class, 'installation'])->name('installation');
 });

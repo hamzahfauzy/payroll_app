@@ -27,12 +27,12 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Employee extends Model
 {
-    
+
     static $rules = [
-		'position_id' => 'required',
-		'NIK' => 'required|unique:employees',
-		'name' => 'required',
-		'work_around' => 'required',
+        'position_id' => 'required',
+        'NIK' => 'required|unique:employees',
+        'name' => 'required',
+        'work_around' => 'required',
     ];
 
     protected $perPage = 20;
@@ -42,7 +42,7 @@ class Employee extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id','position_id','NIK','NPWP','name','work_around','bank_account'];
+    protected $fillable = ['user_id', 'position_id', 'NIK', 'NPWP', 'name', 'work_around', 'bank_account'];
 
 
     /**
@@ -52,7 +52,7 @@ class Employee extends Model
     {
         return $this->hasMany('App\Models\EmployeePeriod', 'employee_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -60,7 +60,7 @@ class Employee extends Model
     {
         return $this->hasMany('App\Models\EmployeeSallary', 'employee_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -68,7 +68,7 @@ class Employee extends Model
     {
         return $this->hasOne('App\Models\Position', 'id', 'position_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -87,20 +87,17 @@ class Employee extends Model
         return $this->position->cost;
     }
 
-    function getTunjangan()
+    function getTunjanganAttribute()
     {
         $ref_tunjangan = $this->position->allowances;
         $tunjangan = 0;
-        foreach($ref_tunjangan as $t)
-        {
-            if($t->allowance_type == 'Percent')
-                $tunjangan += $gaji_pokok * $t->amount / 100;
+        foreach ($ref_tunjangan as $t) {
+            if ($t->allowance_type == 'Percent')
+                $tunjangan += $this->gaji_pokok * $t->amount / 100;
             else
                 $tunjangan += $t->amount;
         }
 
         return $tunjangan;
     }
-    
-
 }

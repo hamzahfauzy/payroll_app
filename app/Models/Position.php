@@ -21,11 +21,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Position extends Model
 {
-    
+
     static $rules = [
-		'name' => 'required',
-		'sallary' => 'required',
-		'cost' => 'required',
+        'name' => 'required',
+        'sallary' => 'required',
+        'cost' => 'required',
     ];
 
     protected $perPage = 20;
@@ -35,7 +35,7 @@ class Position extends Model
      *
      * @var array
      */
-    protected $fillable = ['name','sallary','cost'];
+    protected $fillable = ['name', 'sallary', 'cost'];
 
 
     /**
@@ -45,7 +45,7 @@ class Position extends Model
     {
         return $this->hasMany('App\Models\Allowance', 'position_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -56,13 +56,11 @@ class Position extends Model
 
     public function getSallaryFormatAttribute()
     {
-        return 'Rp. '.number_format($this->sallary);
+        return 'Rp. ' . number_format($this->sallary);
     }
 
     public function getCostFormatAttribute()
     {
-        return 'Rp. '.number_format($this->cost);
+        return 'Rp. ' . number_format($this->cost);
     }
-    
-
 }

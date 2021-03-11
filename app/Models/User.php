@@ -28,9 +28,9 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     static $rules = [
-		'name' => 'required',
-		'email' => 'required|unique:employees',
-		'password' => 'required',
+        'name' => 'required',
+        'email' => 'required|unique:employees',
+        'password' => 'required',
     ];
 
     protected $perPage = 20;
@@ -78,6 +78,4 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\Employee', 'user_id', 'id');
     }
-    
-
 }

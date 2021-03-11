@@ -22,11 +22,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EmployeePeriod extends Model
 {
-    
+
     static $rules = [
-		'employee_id' => 'required',
-		'period_id' => 'required',
-		'status' => 'required',
+        'employee_id' => 'required',
+        'period_id' => 'required',
+        'status' => 'required',
     ];
 
     protected $perPage = 20;
@@ -36,7 +36,7 @@ class EmployeePeriod extends Model
      *
      * @var array
      */
-    protected $fillable = ['employee_id','period_id','status','payout_at'];
+    protected $fillable = ['employee_id', 'period_id', 'status', 'payout_at'];
 
 
     /**
@@ -46,7 +46,7 @@ class EmployeePeriod extends Model
     {
         return $this->hasOne('App\Models\Employee', 'id', 'employee_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -62,14 +62,14 @@ class EmployeePeriod extends Model
 
     public function getPotonganAttribute()
     {
-        $ref_potongan = Sallary::where('sallary_type','Potongan')->get()->pluck('id');
-        return $this->sallaries()->whereIn('sallary_id',$ref_potongan)->sum('amount');
+        $ref_potongan = Sallary::where('sallary_type', 'Potongan')->get()->pluck('id');
+        return $this->sallaries()->whereIn('sallary_id', $ref_potongan)->sum('amount');
     }
 
     public function getBonusAttribute()
     {
-        $ref_bonus = Sallary::where('sallary_type','Bonus')->get()->pluck('id');
-        return $this->sallaries()->whereIn('sallary_id',$ref_bonus)->sum('amount');
+        $ref_bonus = Sallary::where('sallary_type', 'Bonus')->get()->pluck('id');
+        return $this->sallaries()->whereIn('sallary_id', $ref_bonus)->sum('amount');
     }
 
     public function getSallaryTotalAttribute()
@@ -77,18 +77,15 @@ class EmployeePeriod extends Model
         $gaji_pokok = $this->employee->gaji_pokok;
         $biaya_jabatan = $this->employee->biaya_jabatan;
         $tunjangan = $this->employee->tunjangan;
-        
+
         $potongan = $this->potongan;
         $bonus = $this->bonus;
 
-        return $gaji_pokok + $tunjangan + $bonus - $potongan;
-
+        return $gaji_pokok + $tunjangan + $bonus - $potongan - $biaya_jabatan;
     }
 
     public function getSallaryTotalFormatAttribute()
     {
-        return 'Rp. '.number_format($this->sallary_total);
+        return 'Rp. ' . number_format($this->sallary_total);
     }
-    
-
 }

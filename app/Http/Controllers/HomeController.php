@@ -2,9 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
+use App\Models\EmployeePeriod;
+use App\Models\EmployeeSallary;
 use App\Models\User;
 use App\Models\Installation;
+use App\Models\Period;
+use App\Models\Position;
+use Dompdf\Dompdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class HomeController extends Controller
 {
@@ -27,13 +35,155 @@ class HomeController extends Controller
     public function index()
     {
         $installation = $this->installation;
-        return view('home',compact('installation'));
+
+        $user = Auth::user();
+
+        if ($user->employee) {
+            $employeePeriods = $user->employee->employeePeriods;
+
+            return view('home', compact('employeePeriods'));
+        }
+
+        $employee = Employee::get()->count();
+        $period = Period::get()->count();
+        $position = Position::get()->count();
+        $not_paid = EmployeePeriod::where('status', 'Belum Dibayar')->get()->count();
+
+        return view('home', compact('employee', 'period', 'position', 'not_paid'));
+    }
+
+    function payroll(EmployeePeriod $employeePeriod)
+    {
+        $user = $employeePeriod->employee->user;
+
+        $employeeSallaries = EmployeeSallary::where('period_id', $employeePeriod->period_id)->where('employee_id', $employeePeriod->employee_id)->get();
+
+        $data = [];
+
+        foreach ($employeeSallaries as $employeeSallary) {
+            if ($employeeSallary->sallary->sallary_type == "Bonus") {
+                $data["pendapatan"][$employeeSallary->sallary->name] = $employeeSallary->amount;
+            } else {
+                $data["potongan"][$employeeSallary->sallary->name] = $employeeSallary->amount;
+            }
+        }
+
+        $data["pendapatan"]['Gaji Pokok'] = $user->employee->position->sallary;
+        $data["pendapatan"]["Tunjangan"] = $user->employee->tunjangan;
+        $data["potongan"]['Biaya Jabatan'] = $user->employee->position->cost;
+
+        $total = $employeePeriod->sallary_total;
+
+        $installation = $this->installation;
+
+        // return view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation'));
+
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation')));
+        $dompdf->render();
+        $dompdf->stream();
+    }
+
+    public function edit_profile(Request $request)
+    {
+
+        if ($request->isMethod("post")) {
+
+            $user = User::find(Auth::id());
+
+            if ($user->employee == null) {
+
+                $request->validate([
+                    'name' => 'required|string',
+                    'email' =>
+                    [
+                        'required',
+                        'string',
+                        Rule::unique('users')->ignore($user->id),
+                    ],
+                    'password' => 'nullable|string|confirmed',
+
+                    'company_name' => 'required',
+                    'phone_number' => 'required',
+                    'address' => 'required',
+                    'company_email' => 'required',
+                    'postal_code' => 'required',
+                    'logo' => 'nullable|file|max:500',
+                ]);
+
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->password = $request->password ?? $user->password;
+
+                $logo = $request->file('logo') ? $request->file('logo')->store('logo') : $this->installation->logo;
+
+                $install = $this->installation->update([
+                    'company_name' => $request->company_name,
+                    'email' => $request->company_email,
+                    'phone_number' => $request->phone_number,
+                    'address' => $request->address,
+                    'postal_code' => $request->postal_code,
+                    'logo' => $logo
+                ]);
+
+                if ($user->save() && $install) {
+                    return redirect()->back()->with("success", "Edit profile & installation success");
+                }
+            } else {
+
+                $request->validate([
+                    'name' => 'required|string',
+                    'email' =>
+                    [
+                        'required',
+                        'string',
+                        Rule::unique('users')->ignore($user->id),
+                    ],
+                    'password' => 'nullable|string|confirmed',
+
+                    'NIK' =>
+                    [
+                        'required',
+                        'string',
+                        Rule::unique('employees')->ignore($user->employee->id),
+                    ],
+                    'NPWP' =>
+                    [
+                        'required',
+                        'string',
+                        Rule::unique('employees')->ignore($user->employee->id),
+                    ],
+                    'employee_name' => 'required|string',
+                    'work_around' => 'required|string',
+                    'bank_account' => 'required|string',
+                ]);
+
+                $user->name = $request->name;
+                $user->email = $request->email;
+                $user->password = $request->password ?? $user->password;
+
+                $employee = $user->employee->update([
+                    'name' => $request->employee_name,
+                    'NIK' => $request->NIK,
+                    'NPWP' => $request->NPWP,
+                    'work_around' => $request->work_around,
+                    'bank_account' => $request->bank_account,
+                ]);
+
+                if ($user->save() && $employee) {
+                    return redirect()->back()->with("success", "Edit profile & employee success");
+                }
+            }
+        }
+
+        $installation = $this->installation;
+
+        return view('edit-profile', compact('installation'));
     }
 
     public function installation(Request $request)
     {
-        if($request->method() == 'POST')
-        {
+        if ($request->method() == 'POST') {
             $request->validate([
                 'company_name' => 'required',
                 'phone_number' => 'required',
@@ -51,7 +201,7 @@ class HomeController extends Controller
                 'phone_number' => $request->phone_number,
                 'address' => $request->address,
                 'postal_code' => $request->postal_code,
-                'logo' => $request->logo,
+                'logo' => $logo,
             ]);
 
             User::create([
