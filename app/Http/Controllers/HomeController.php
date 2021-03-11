@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Book;
 use App\Models\User;
 use App\Models\Installation;
 use Illuminate\Http\Request;
@@ -18,7 +17,6 @@ class HomeController extends Controller
     {
         // $this->middleware('auth');
         $this->installation = Installation::first();
-        $this->book = new Book;
     }
 
     /**
@@ -28,10 +26,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        session()->forget('book');
         $installation = $this->installation;
-        $books = $this->book->get();
-        return view('home',compact('installation','books'));
+        return view('home',compact('installation'));
     }
 
     public function installation(Request $request)

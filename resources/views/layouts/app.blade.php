@@ -50,25 +50,33 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('home') }}">{{ __('Dashboard') }}</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('ref-accounts.index') }}">{{ __('Master Akun') }}</a>
+                            @if(!auth()->user()->employee)
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ __('Master Data') }}
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('periods.index') }}">
+                                        {{ __('Master Periode') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('positions.index') }}">
+                                        {{ __('Master Jabatan') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('allowances.index') }}">
+                                        {{ __('Master Tunjangan Jabatan') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('employees.index') }}">
+                                        {{ __('Master Karyawan') }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ route('sallaries.index') }}">
+                                        {{ __('Master Referensi') }}
+                                    </a>
+                                </div>
                             </li>
-                            @if (session('book'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('accounts.index') }}">{{ __('Akun Aktif') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('transactions.index') }}">{{ __('Jurnal') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('buku-besar') }}">{{ __('Buku Besar') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('neraca') }}">{{ __('Neraca') }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('laba-rugi') }}">{{ __('Laba Rugi') }}</a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('employee-periods.index') }}">{{ __('Gaji Karyawan') }}</a>
+                            </li>
                             @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -76,6 +84,9 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('edit-profile') }}">
+                                        {{ __('Edit Profile') }}
+                                    </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

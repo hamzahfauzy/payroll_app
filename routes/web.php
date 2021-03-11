@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\SallaryController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PositionController;
+use App\Http\Controllers\AllowanceController;
+use App\Http\Controllers\EmployeePeriodController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,24 +28,16 @@ Route::middleware('installed')->group(function(){
 
     Route::middleware('auth')->group(function(){
         Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-        Route::resource('books',App\Http\Controllers\BookController::class);
-        Route::resource('ref-accounts',App\Http\Controllers\RefAccountController::class);
-        Route::match(['get','post'],'ref-accounts/import',[App\Http\Controllers\RefAccountController::class,'import'])->name('ref-accounts.import');
-        Route::get('ref-accounts/download',[App\Http\Controllers\RefAccountController::class,'download'])->name('ref-accounts.download');
-
-        Route::middleware('book_session')->group(function(){
-            Route::get('accounts/import',[App\Http\Controllers\AccountController::class,'import'])->name('accounts.import');
-            Route::resource('accounts',App\Http\Controllers\AccountController::class);
-
-            Route::resource('transactions',App\Http\Controllers\TransactionController::class);
-
-            Route::get('buku-besar',[App\Http\Controllers\TransactionController::class,'bukuBesar'])->name('buku-besar');
-            Route::get('neraca',[App\Http\Controllers\AccountController::class,'neraca'])->name('neraca');
-            Route::get('laba-rugi',[App\Http\Controllers\AccountController::class,'labaRugi'])->name('laba-rugi');
-            
-            Route::post('accounts/insert',[App\Http\Controllers\AccountController::class,'insert'])->name('accounts.insert');
-            
+        Route::get('edit-profile', [App\Http\Controllers\HomeController::class, 'index'])->name('edit-profile');
+        
+        Route::middleware('admin')->group(function(){
+            Route::resource('positions', PositionController::class);
+            Route::resource('employees', EmployeeController::class);
+            Route::resource('allowances', AllowanceController::class);
+            Route::resource('sallaries', SallaryController::class);
+            Route::resource('periods', PeriodController::class);
+            Route::match(['get','post'],'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
+            Route::resource('employee-periods', EmployeePeriodController::class);
         });
     });
     

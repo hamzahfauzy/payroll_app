@@ -7,15 +7,34 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Class User
+ *
+ * @property $id
+ * @property $name
+ * @property $email
+ * @property $email_verified_at
+ * @property $password
+ * @property $remember_token
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Employee[] $employees
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    static $rules = [
+		'name' => 'required',
+		'email' => 'required|unique:employees',
+		'password' => 'required',
+    ];
+
+    protected $perPage = 20;
+
     protected $fillable = [
         'name',
         'email',
@@ -45,4 +64,20 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function employees()
+    {
+        return $this->hasMany('App\Models\Employee', 'user_id', 'id');
+    }
+
+    public function employee()
+    {
+        return $this->hasOne('App\Models\Employee', 'user_id', 'id');
+    }
+    
+
 }
