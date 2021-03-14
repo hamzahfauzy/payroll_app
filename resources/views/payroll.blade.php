@@ -61,7 +61,7 @@
                 <p style="margin:0;padding:0">{{$installation->address}}</p>
                 <p>Telp. {{$installation->phone_number}}</p>
             </td>
-            <td>
+            <td class="t-right">
                 <p style="margin:0;padding:0"><b>{{$employeePeriod->period->name}} {{$employeePeriod->period->year}}</b></p>
             </td>
         </tr>
