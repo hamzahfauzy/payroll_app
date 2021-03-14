@@ -49,11 +49,11 @@
     <table cellpadding="5" cellspacing="0">
         <tr>
             <td style="vertical-align: top">
-                <h2 style="margin:0;padding:0">{{$installation->company_name}}</h2>
+                <h3 style="margin:0;padding:0">{{$installation->company_name}}</h3>
             </td>
 
             <td style="vertical-align: top" class="t-right">
-                <h2 style="margin:0;padding:0">SLIP GAJI KARYAWAN</h2>
+                <h3 style="margin:0;padding:0">SLIP GAJI KARYAWAN</h3>
             </td>
         </tr>
         <tr>
