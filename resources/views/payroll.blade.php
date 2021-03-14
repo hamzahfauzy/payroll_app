@@ -43,12 +43,9 @@
 </head>
 
 <body>
-
+    <img src="{{$logo}}" alt="" height="80px" width="100%" style="object-fit: contain;object-position: center">
     <table cellpadding="5" cellspacing="0">
         <tr>
-            <td width="100px">
-                <img src="{{$logo}}" alt="" height="80px" width="100%" style="object-fit: contain;object-position: center">
-            </td>
             <td style="vertical-align: top">
                 <h2 style="margin:0;padding:0">{{$installation->company_name}}</h2>
                 <p style="margin:0;padding:0">{{$installation->address}}</p>
