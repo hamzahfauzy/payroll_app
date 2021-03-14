@@ -43,17 +43,25 @@
 </head>
 
 <body>
-    <img src="{{$logo}}" alt="" height="80px" width="100%" style="object-fit: contain;object-position: center">
+    <center>
+        <img src="{{$logo}}" alt="" width="300px">
+    </center>
     <table cellpadding="5" cellspacing="0">
         <tr>
             <td style="vertical-align: top">
                 <h2 style="margin:0;padding:0">{{$installation->company_name}}</h2>
-                <p style="margin:0;padding:0">{{$installation->address}}</p>
-                <p>Telp. {{$installation->phone_number}}</p>
             </td>
 
             <td style="vertical-align: top" class="t-right">
                 <h2 style="margin:0;padding:0">SLIP GAJI KARYAWAN</h2>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p style="margin:0;padding:0">{{$installation->address}}</p>
+                <p>Telp. {{$installation->phone_number}}</p>
+            </td>
+            <td>
                 <p style="margin:0;padding:0"><b>{{$employeePeriod->period->name}} {{$employeePeriod->period->year}}</b></p>
             </td>
         </tr>
@@ -72,7 +80,7 @@
             <td class="t-right" width="100px">
                 Area Kerja
             </td>
-            <td width="120px">
+            <td width="200px">
                 : <b> {{$user->employee->work_around}}</b>
             </td>
         </tr>
