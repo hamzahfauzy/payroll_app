@@ -121,9 +121,13 @@ class HomeController extends Controller
                     'logo' => 'nullable|file|max:500',
                 ]);
 
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->password = $request->password ?? $user->password;
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                ]);
+
+                if($request->password)
+                    $user->update(['password'=>$request->password]);
 
                 $logo = $request->file('logo') ? $request->file('logo')->store('public/logo') : $this->installation->logo;
 
@@ -136,7 +140,7 @@ class HomeController extends Controller
                     'logo' => $logo
                 ]);
 
-                if ($user->save() && $install) {
+                if ($install) {
                     return redirect()->back()->with("success", "Edit profile & installation success");
                 }
             } else {
@@ -168,9 +172,13 @@ class HomeController extends Controller
                     'bank_account' => 'required|string',
                 ]);
 
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->password = $request->password ?? $user->password;
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                ]);
+
+                if($request->password)
+                    $user->update(['password'=>$request->password]);
 
                 $employee = $user->employee->update([
                     'name' => $request->employee_name,
