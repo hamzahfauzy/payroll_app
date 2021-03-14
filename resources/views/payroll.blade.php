@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payroll</title>
+    <title>{{$title}}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        h3,p {
+            margin:0;
+            padding:0;
         }
 
         hr {
@@ -25,13 +24,8 @@
             width: 100%;
         }
 
-        th,
-        td {
-            padding: 6px;
-        }
-
         .p6 {
-            padding: 6px;
+            padding:6px;
         }
 
         #ttd {
@@ -50,84 +44,92 @@
 
 <body>
 
-    <table class="table2">
+    <table cellpadding="5" cellspacing="0">
         <tr>
-            <td>
-                <h3>PT {{$installation->company_name}}</h3>
+            <td width="100px">
+                <img src="{{$logo}}" alt="" height="80px" width="100%" style="object-fit: contain;object-position: center">
             </td>
-
-            <td class="t-right">
-                <h3>SLIP GAJI KARYAWAN</h3>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <p>{{$installation->address}}</p>
-            </td>
-            <td class="t-right">
-                <p><b>{{$employeePeriod->period->name}} {{$employeePeriod->period->year}}</b></p>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
+            <td style="vertical-align: top">
+                <h2 style="margin:0;padding:0">{{$installation->company_name}}</h2>
+                <p style="margin:0;padding:0">{{$installation->address}}</p>
                 <p>Telp. {{$installation->phone_number}}</p>
             </td>
-            <td></td>
-        </tr>
-    </table>
 
-    <hr>
-
-    <table>
-        <tr>
-            <td>
-                <p>Nama : <b> {{$user->employee->name}}</b></p>
-            </td>
-
-            <td class="t-right">
-                <p>Area Kerja : <b> {{$user->employee->work_around}}</b></p>
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <p>Jabatan : <b>{{$user->employee->position->name}}</b></p>
-            </td>
-            <td class="t-right">
-                <p>N.I.K : <b>{{$user->employee->NIK}}</b></p>
+            <td style="vertical-align: top" class="t-right">
+                <h2 style="margin:0;padding:0">SLIP GAJI KARYAWAN</h2>
+                <p style="margin:0;padding:0"><b>{{$employeePeriod->period->name}} {{$employeePeriod->period->year}}</b></p>
             </td>
         </tr>
     </table>
 
     <hr>
 
-    <table border="1">
+    <table cellpadding="5" cellspacing="0" width="100%">
         <tr>
-            <th>PENDAPATAN</th>
-            <th>POTONGAN</th>
+            <td width="50px">
+                Nama
+            </td>
+            <td>
+                : <b>{{$user->employee->name}}</b>
+            </td>
+            <td class="t-right" width="100px">
+                Area Kerja
+            </td>
+            <td width="120px">
+                : <b> {{$user->employee->work_around}}</b>
+            </td>
         </tr>
+
         <tr>
             <td>
+                Jabatan
+            </td>
+            <td>
+                : <b>{{$user->employee->position->name}}</b>
+            </td>
+            <td class="t-right">
+                N.I.K
+            </td>
+            <td>
+                : <b>{{$user->employee->NIK}}</b>
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th style="padding:6px">PENDAPATAN</th>
+            <th style="padding:6px">POTONGAN</th>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;padding:6px">
+                <?php $gaji_kotor = 0; ?>
                 @foreach($data['pendapatan'] as $key => $value)
-                <p class="p6">{{$key}} <b class="right">Rp.{{number_format($value)}}</b></p>
+                <?php $gaji_kotor+=$value ?>
+                <p class="p6">{{$key}} <b class="right">{{number_format($value)}}</b></p>
                 @endforeach
             </td>
-            <td>
-
+            <td style="vertical-align: top;padding:6px">
+                <?php $potongan = 0; ?>
                 @foreach($data['potongan'] as $key => $value)
-                <p class="p6">{{$key}} <b class="right">Rp.{{number_format($value)}}</b></p>
+                <?php $potongan+=$value ?>
+                <p class="p6">{{$key}} <b class="right">{{number_format($value)}}</b></p>
                 @endforeach
             </td>
         </tr>
         <tr>
-            <th>Total Penerimaan</th>
-            <th>Rp.{{number_format($total)}}</th>
+            <td><p class="p6"><b>GAJI KOTOR</b> <b class="right">{{number_format($gaji_kotor)}}</b></p></td>
+            <td><p class="p6"><b>TOTAL POTONGAN</b> <b class="right">{{number_format($potongan)}}</b></p></td>
+        </tr>
+        <tr>
+            <td style="border-right: 0px"></td>
+            <td style="padding:6px;border-left: 0px">
+                <p class="p6"><b>TOTAL PENERIMAAN </b> <b class="right">Rp. {{number_format($total)}}</b></p>
+            </td>
         </tr>
     </table>
-
-    <hr>
 
     <div id="ttd" class="right mb-auto">
         <p>Penerima, </p>

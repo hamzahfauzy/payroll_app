@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Dompdf\Dompdf;
+use App\Models\User;
+use App\Models\Period;
 use App\Models\Employee;
+use App\Models\Position;
+use App\Models\Installation;
+use Illuminate\Http\Request;
 use App\Models\EmployeePeriod;
 use App\Models\EmployeeSallary;
-use App\Models\User;
-use App\Models\Installation;
-use App\Models\Period;
-use App\Models\Position;
-use Dompdf\Dompdf;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -75,13 +76,22 @@ class HomeController extends Controller
         $total = $employeePeriod->sallary_total;
 
         $installation = $this->installation;
+        $title = 'SLIP-'.$user->employee->NIK.'-'.$employeePeriod->period->name;
+        $logo = public_path().Storage::url($installation->logo);
+        $type = pathinfo($logo, PATHINFO_EXTENSION);
+        $logo = file_get_contents($logo);
+        $logo = 'data:image/' . $type . ';base64,' . base64_encode($logo);
+        // $logo = Storage::get($installation->logo);
 
-        // return view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation'));
+        // return $logo;
+
+        // return view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation','title','logo'));
 
         $dompdf = new Dompdf();
-        $dompdf->loadHtml(view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation')));
+        $dompdf->setPaper('Folio','portrait');
+        $dompdf->loadHtml(view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation','title','logo')));
         $dompdf->render();
-        $dompdf->stream();
+        $dompdf->stream($title.'.pdf',array("Attachment" => false));
     }
 
     public function edit_profile(Request $request)
@@ -115,7 +125,7 @@ class HomeController extends Controller
                 $user->email = $request->email;
                 $user->password = $request->password ?? $user->password;
 
-                $logo = $request->file('logo') ? $request->file('logo')->store('logo') : $this->installation->logo;
+                $logo = $request->file('logo') ? $request->file('logo')->store('public/logo') : $this->installation->logo;
 
                 $install = $this->installation->update([
                     'company_name' => $request->company_name,
@@ -194,7 +204,7 @@ class HomeController extends Controller
                 'password' => 'required',
                 'logo' => 'required|file|max:500',
             ]);
-            $logo = $request->file('logo')->store('logo');
+            $logo = $request->file('logo')->store('public/logo');
             Installation::create([
                 'company_name' => $request->company_name,
                 'email' => $request->company_email,
