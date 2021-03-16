@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/madusarimas/payroll.madusarimas.co.id/
+    - /bin/cp -a * $DEPLOYPATH
