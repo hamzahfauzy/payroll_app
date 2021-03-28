@@ -32,6 +32,11 @@
             {!! $errors->first('bank_account', '<div class="invalid-feedback">:message</p>') !!}
         </div>
         <div class="form-group">
+            {{ Form::label('Gaji Pokok') }}
+            {{ Form::text('main_sallary', $employee->main_sallary, ['class' => 'form-control' . ($errors->has('main_sallary') ? ' is-invalid' : ''), 'placeholder' => 'No. Rekening']) }}
+            {!! $errors->first('main_sallary', '<div class="invalid-feedback">:message</p>') !!}
+        </div>
+        <div class="form-group">
             {{ Form::label('Password') }}
             <input type="password" name="password" id="" class="form-control {{$errors->has('password') ? ' is-invalid' : ''}}" placeholder="Password">
             {!! $errors->first('password', '<div class="invalid-feedback">:message</p>') !!}
