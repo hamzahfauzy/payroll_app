@@ -40,12 +40,11 @@
                                     <tr>
                                         <th>No</th>
                                         
-										<th>NIK</th>
-										<th>Nama</th>
-										<th>Username</th>
+										<th>Karyawan</th>
 										<th>Jabatan</th>
 										<th>Area Kerja</th>
 										<th>No. Rekening</th>
+										<th>Gaji Pokok</th>
 
                                         <th></th>
                                     </tr>
@@ -55,12 +54,15 @@
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-											<td>{{ $employee->NIK }}</td>
-											<td>{{ $employee->name }}</td>
-											<td>{{ $employee->user->email }}</td>
+											<td>
+                                                {{ $employee->name }}
+                                                <br>
+                                                <b>{{ $employee->NIK }}</b>
+                                            </td>
 											<td>{{ $employee->position->name }}</td>
 											<td>{{ $employee->work_around }}</td>
 											<td>{{ $employee->bank_account }}</td>
+											<td>{{ number_format($employee->gaji_pokok) }}</td>
 
                                             <td>
                                                 <form action="{{ route('employees.destroy',$employee->id) }}" method="POST" onsubmit="if(confirm('Apakah anda yakin menghapus data ini ?')){return true}else{return false}">

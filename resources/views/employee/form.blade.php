@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
             {{ Form::label('Gaji Pokok') }}
-            {{ Form::text('main_sallary', $employee->main_sallary, ['class' => 'form-control' . ($errors->has('main_sallary') ? ' is-invalid' : ''), 'placeholder' => 'No. Rekening']) }}
+            {{ Form::number('main_sallary', $employee->main_sallary, ['class' => 'form-control' . ($errors->has('main_sallary') ? ' is-invalid' : ''), 'placeholder' => 'No. Rekening']) }}
             {!! $errors->first('main_sallary', '<div class="invalid-feedback">:message</p>') !!}
         </div>
         <div class="form-group">
