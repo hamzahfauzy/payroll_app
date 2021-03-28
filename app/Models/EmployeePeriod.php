@@ -60,6 +60,18 @@ class EmployeePeriod extends Model
         return $this->hasMany('App\Models\EmployeeSallary', 'period_id', 'period_id', 'employee_id', 'employee_id');
     }
 
+    public function getAllPotonganAttribute()
+    {
+        $ref_potongan = Sallary::where('sallary_type', 'Potongan')->get()->pluck('id');
+        return $this->sallaries()->whereIn('sallary_id', $ref_potongan)->get();
+    }
+
+    public function getAllBonusAttribute()
+    {
+        $ref_bonus = Sallary::where('sallary_type', 'Bonus')->get()->pluck('id');
+        return $this->sallaries()->whereIn('sallary_id', $ref_bonus)->get();
+    }
+
     public function getPotonganAttribute()
     {
         $ref_potongan = Sallary::where('sallary_type', 'Potongan')->get()->pluck('id');

@@ -17,7 +17,10 @@
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('positions.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                <a href="{{ route('positions.import') }}" class="btn btn-success btn-sm">
+                                  {{ __('Import Jabatan') }}
+                                </a>
+                                <a href="{{ route('positions.create') }}" class="btn btn-primary btn-sm">
                                   {{ __('Buat Jabatan Baru') }}
                                 </a>
                               </div>

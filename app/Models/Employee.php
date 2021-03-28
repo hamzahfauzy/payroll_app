@@ -33,6 +33,7 @@ class Employee extends Model
         'NIK' => 'required|unique:employees',
         'name' => 'required',
         'work_around' => 'required',
+        'main_sallary' => 'required',
     ];
 
     protected $perPage = 20;
@@ -42,7 +43,7 @@ class Employee extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'position_id', 'NIK', 'NPWP', 'name', 'work_around', 'bank_account'];
+    protected $fillable = ['user_id', 'position_id', 'NIK', 'NPWP', 'name', 'work_around', 'bank_account', 'main_sallary'];
 
 
     /**
@@ -79,7 +80,7 @@ class Employee extends Model
 
     function getGajiPokokAttribute()
     {
-        return $this->position->sallary;
+        return $this->position->sallary+$this->main_sallary;
     }
 
     function getBiayaJabatanAttribute()

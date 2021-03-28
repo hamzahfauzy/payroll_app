@@ -167,6 +167,17 @@ class EmployeePeriodController extends Controller
             ->with('success', 'EmployeePeriod updated successfully');
     }
 
+    public function pay(EmployeePeriod $employeePeriod)
+    {
+        $employeePeriod->update([
+            'status' => 'Sudah Dibayar',
+            'payout_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return redirect()->route('employee-periods.index',['period'=>$employeePeriod->period_id])
+            ->with('success', 'Payout updated successfully');
+    }
+
     /**
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse

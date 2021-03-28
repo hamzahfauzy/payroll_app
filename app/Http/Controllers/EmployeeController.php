@@ -151,4 +151,57 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')
             ->with('success', 'Employee deleted successfully');
     }
+
+    public function import(Request $request)
+    {
+        if ($request->isMethod("post"))
+        {
+            $file = $request->file('file');
+            $extension = $file->extension();
+            if($extension=='xlsx'){
+                $inputFileType = 'Xlsx';
+            }else{
+                $inputFileType = 'Xls';
+            }
+            $reader     = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+             
+            $spreadsheet = $reader->load($file);
+            $worksheet   = $spreadsheet->getActiveSheet();
+            $highestRow  = $worksheet->getHighestRow();
+            $highestColumn = $worksheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            DB::beginTransaction();
+            try {
+                //code...
+                for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
+                    $user = User::create([
+                        'name' => $worksheet->getCellByColumnAndRow(5, $row)->getValue(),
+                        'email' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
+                        'password' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
+                    ]);
+                    $position = Position::where('name',$worksheet->getCellByColumnAndRow(2, $row)->getValue())->first();
+                    Employee::create([
+                        'position_id' => $position->id,
+                        'user_id' => $user->id,
+                        'NIK' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
+                        'NPWP' => $worksheet->getCellByColumnAndRow(4, $row)->getValue(),
+                        'name' => $worksheet->getCellByColumnAndRow(5, $row)->getValue(),
+                        'work_around' => $worksheet->getCellByColumnAndRow(6, $row)->getValue(),
+                        'bank_account' => $worksheet->getCellByColumnAndRow(7, $row)->getValue(),
+                        'main_sallary' => $worksheet->getCellByColumnAndRow(8, $row)->getValue(),
+                    ]);
+                }
+                DB::commit();
+                return redirect()->route('employees.index')
+                    ->with('success', 'Employee imported successfully');
+            } catch (\Throwable $th) {
+                DB::rollback();
+                // return redirect()->route('emloyees.index')
+                //     ->with('error', 'Position imported failed');
+                throw $th;
+            }
+        }
+        return view('employee.import');
+    }
 }

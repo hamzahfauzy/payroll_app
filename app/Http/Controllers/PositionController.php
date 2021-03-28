@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Position;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class PositionController
@@ -105,5 +106,47 @@ class PositionController extends Controller
 
         return redirect()->route('positions.index')
             ->with('success', 'Position deleted successfully');
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->isMethod("post"))
+        {
+            $file = $request->file('file');
+            $extension = $file->extension();
+            if($extension=='xlsx'){
+                $inputFileType = 'Xlsx';
+            }else{
+                $inputFileType = 'Xls';
+            }
+            $reader     = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+             
+            $spreadsheet = $reader->load($file);
+            $worksheet   = $spreadsheet->getActiveSheet();
+            $highestRow  = $worksheet->getHighestRow();
+            $highestColumn = $worksheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            DB::beginTransaction();
+            try {
+                //code...
+                for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
+                    Position::create([
+                        'name' => $worksheet->getCellByColumnAndRow(2, $row)->getValue(),
+                        'sallary' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
+                        'cost' => $worksheet->getCellByColumnAndRow(4, $row)->getValue(),
+                    ]);
+                }
+                DB::commit();
+                return redirect()->route('positions.index')
+                    ->with('success', 'Position imported successfully');
+            } catch (\Throwable $th) {
+                DB::rollback();
+                return redirect()->route('positions.index')
+                    ->with('error', 'Position imported failed');
+                // throw $th;
+            }
+        }
+        return view('position.import');
     }
 }

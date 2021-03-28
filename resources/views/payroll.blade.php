@@ -18,6 +18,7 @@
 
         body {
             padding: 24px;
+            font-size:12px;
         }
 
         table {
@@ -25,7 +26,7 @@
         }
 
         .p6 {
-            padding:6px;
+            padding:3px;
         }
 
         #ttd {
@@ -69,34 +70,27 @@
 
     <hr>
 
-    <table cellpadding="5" cellspacing="0" width="100%">
+    <table cellpadding="5" cellspacing="0">
         <tr>
-            <td width="50px">
+            <td width="50%">
                 Nama
+                <br>
+                <b>{{$employeePeriod->employee->name}}</b>
             </td>
-            <td>
-                : <b>{{$user->employee->name}}</b>
-            </td>
-            <td class="t-right" width="100px">
+            <td class="t-right" width="50%">
                 Area Kerja
-            </td>
-            <td width="200px">
-                : <b> {{$user->employee->work_around}}</b>
+                <br><b> {{$employeePeriod->employee->work_around}}</b>
             </td>
         </tr>
 
         <tr>
             <td>
                 Jabatan
-            </td>
-            <td>
-                : <b>{{$user->employee->position->name}}</b>
+                <br><b>{{$employeePeriod->employee->position->name}}</b>
             </td>
             <td class="t-right">
                 N.I.K
-            </td>
-            <td>
-                : <b>{{$user->employee->NIK}}</b>
+                <br><b>{{$employeePeriod->employee->NIK}}</b>
             </td>
         </tr>
     </table>
@@ -105,33 +99,32 @@
 
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
-            <th style="padding:6px">PENDAPATAN</th>
-            <th style="padding:6px">POTONGAN</th>
+            <th style="padding:3px">PENDAPATAN</th>
+            <th style="padding:3px">POTONGAN</th>
         </tr>
         <tr>
-            <td style="vertical-align: top;padding:6px">
-                <?php $gaji_kotor = 0; ?>
-                @foreach($data['pendapatan'] as $key => $value)
-                <?php $gaji_kotor+=$value ?>
-                <p class="p6">{{$key}} <b class="right">{{number_format($value)}}</b></p>
+            <td style="vertical-align: top;padding:3px">
+                <p class="p6">Gaji Pokok <b class="right">{{number_format($employeePeriod->employee->gaji_pokok)}}</b>
+                @foreach($employeePeriod->all_bonus as $key => $value)
+                <p class="p6">{{$value->sallary->name}} <b class="right">{{number_format($value->amount)}}</b></p>
                 @endforeach
             </td>
-            <td style="vertical-align: top;padding:6px">
-                <?php $potongan = 0; ?>
-                @foreach($data['potongan'] as $key => $value)
-                <?php $potongan+=$value ?>
-                <p class="p6">{{$key}} <b class="right">{{number_format($value)}}</b></p>
-                @endforeach
+            <td style="vertical-align: top;padding:3px">
+                @forelse($employeePeriod->all_potongan as $key => $value)
+                <p class="p6">{{$value->sallary->name}} <b class="right">{{number_format($value->amount)}}</b></p>
+                @empty
+                <i>Tidak ada potongan</i>
+                @endforelse
             </td>
         </tr>
         <tr>
-            <td><p class="p6"><b>GAJI KOTOR</b> <b class="right">{{number_format($gaji_kotor)}}</b></p></td>
-            <td><p class="p6"><b>TOTAL POTONGAN</b> <b class="right">{{number_format($potongan)}}</b></p></td>
+            <td><p class="p6"><b>GAJI KOTOR</b> <b class="right">{{number_format($employeePeriod->bonus+$employeePeriod->employee->gaji_pokok)}}</b></p></td>
+            <td><p class="p6"><b>TOTAL POTONGAN</b> <b class="right">{{number_format($employeePeriod->potongan)}}</b></p></td>
         </tr>
         <tr>
             <td style="border-right: 0px"></td>
-            <td style="padding:6px;border-left: 0px">
-                <p class="p6"><b>TOTAL PENERIMAAN </b> <b class="right">Rp. {{number_format($total)}}</b></p>
+            <td style="padding:3px;border-left: 0px">
+                <p class="p6"><b>TOTAL PENERIMAAN </b> <b class="right">{{$employeePeriod->sallary_total_format}}</b></p>
             </td>
         </tr>
     </table>
@@ -139,7 +132,7 @@
     <div id="ttd" class="right mb-auto">
         <p>Penerima, </p>
         <br><br><br>
-        <p>( {{$user->employee->name}} )</p>
+        <p>( {{$employeePeriod->employee->name}} )</p>
     </div>
 
 </body>

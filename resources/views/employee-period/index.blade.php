@@ -48,7 +48,14 @@ Gaji Karyawan
 
                                     <td>{{ $employeePeriod->employee->name }}</td>
                                     <td>{{ $employeePeriod->period->name }}</td>
-                                    <td>{{ $employeePeriod->status }}</td>
+                                    <td>
+                                        {{ $employeePeriod->status }}<br>
+                                        @if($employeePeriod->payout_at == null)
+                                        <a href="{{route('employee-periods.pay',$employeePeriod->id)}}" onclick="if(confirm('Apakah anda yakin akan membayar gaji ini')){return true}else{return false}" class="btn btn-warning">Bayar</a>
+                                        @else
+                                        {{ $employeePeriod->payout_at }}
+                                        @endif
+                                    </td>
                                     <td>{{ $employeePeriod->sallary_total_format }}</td>
 
                                     <td>

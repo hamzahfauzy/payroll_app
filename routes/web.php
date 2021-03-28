@@ -31,12 +31,16 @@ Route::middleware('installed')->group(function () {
         Route::match(['get', 'post'], 'edit-profile', [App\Http\Controllers\HomeController::class, 'edit_profile'])->name('edit-profile');
 
         Route::middleware('admin')->group(function () {
+            Route::match(['get', 'post'], 'positions/import', [App\Http\Controllers\PositionController::class, 'import'])->name('positions.import');
+            Route::match(['get', 'post'], 'employees/import', [App\Http\Controllers\EmployeeController::class, 'import'])->name('employees.import');
+            
             Route::resource('positions', PositionController::class);
             Route::resource('employees', EmployeeController::class);
             Route::resource('allowances', AllowanceController::class);
             Route::resource('sallaries', SallaryController::class);
             Route::resource('periods', PeriodController::class);
             Route::match(['get', 'post'], 'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
+            Route::get('employee-periods/{employeePeriod}/pay', [App\Http\Controllers\EmployeePeriodController::class, 'pay'])->name('employee-periods.pay');
             Route::resource('employee-periods', EmployeePeriodController::class);
         });
     });

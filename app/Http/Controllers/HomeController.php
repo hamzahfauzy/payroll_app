@@ -55,41 +55,16 @@ class HomeController extends Controller
 
     function payroll(EmployeePeriod $employeePeriod)
     {
-        $user = $employeePeriod->employee->user;
-
-        $employeeSallaries = EmployeeSallary::where('period_id', $employeePeriod->period_id)->where('employee_id', $employeePeriod->employee_id)->get();
-
-        $data = [];
-
-        foreach ($employeeSallaries as $employeeSallary) {
-            if ($employeeSallary->sallary->sallary_type == "Bonus") {
-                $data["pendapatan"][$employeeSallary->sallary->name] = $employeeSallary->amount;
-            } else {
-                $data["potongan"][$employeeSallary->sallary->name] = $employeeSallary->amount;
-            }
-        }
-
-        $data["pendapatan"]['Gaji Pokok'] = $user->employee->position->sallary;
-        $data["pendapatan"]["Tunjangan"] = $user->employee->tunjangan;
-        $data["potongan"]['Biaya Jabatan'] = $user->employee->position->cost;
-
-        $total = $employeePeriod->sallary_total;
-
         $installation = $this->installation;
-        $title = 'SLIP-'.$user->employee->NIK.'-'.$employeePeriod->period->name;
+        $title = 'SLIP-'.$employeePeriod->employee->NIK.'-'.$employeePeriod->period->name;
         $logo = public_path().Storage::url($installation->logo);
         $type = pathinfo($logo, PATHINFO_EXTENSION);
         $logo = file_get_contents($logo);
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($logo);
-        // $logo = Storage::get($installation->logo);
-
-        // return $logo;
-
-        // return view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation','title','logo'));
-
+        
         $dompdf = new Dompdf();
         $dompdf->setPaper('Folio','portrait');
-        $dompdf->loadHtml(view('payroll', compact('employeePeriod', 'user', 'data', 'total', 'installation','title','logo')));
+        $dompdf->loadHtml(view('payroll', compact('employeePeriod','installation','title','logo')));
         $dompdf->render();
         $dompdf->stream($title.'.pdf',array("Attachment" => false));
     }

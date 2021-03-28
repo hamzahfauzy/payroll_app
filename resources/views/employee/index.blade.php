@@ -16,11 +16,15 @@
                                 {{ __('Karyawan') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                            <div class="float-right">
+                                <a href="{{ route('employees.import') }}" class="btn btn-success btn-sm">
+                                  {{ __('Import Karyawan') }}
+                                </a>
+
+                                <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
                                   {{ __('Buat Karyawan Baru') }}
                                 </a>
-                              </div>
+                            </div>
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
