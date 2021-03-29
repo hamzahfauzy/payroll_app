@@ -5433,6 +5433,10 @@
                 }
             ],
             "description": "QR Code Generator for PHP wrapper for Laravel",
+            "support": {
+                "issues": "https://github.com/werneckbh/laravel-qr-code/issues",
+                "source": "https://github.com/werneckbh/laravel-qr-code/tree/master"
+            },
             "time": "2018-02-12T20:01:20+00:00"
         },
         {

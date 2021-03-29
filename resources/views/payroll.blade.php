@@ -129,10 +129,18 @@
         </tr>
     </table>
 
-    <div id="ttd" class="right mb-auto">
-        <p>Penerima, </p>
-        <br><br><br>
-        <p>( {{$employeePeriod->employee->name}} )</p>
+    <div style="position:relative">
+        <p></p>
+        <br>
+        <center>
+        <img src="{{$qrcode}}" alt="" width="150px">
+        </center>
+
+        <div id="ttd" class="right mb-auto" style="position:absolute;top:50px;">
+            <p>Penerima, </p>
+            <br><br><br>
+            <p>( <b>{{$employeePeriod->employee->name}}</b> )</p>
+        </div>
     </div>
 
 </body>

@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\EmployeePeriod;
 use App\Models\EmployeeSallary;
 use Illuminate\Validation\Rule;
+use LaravelQRCode\Facades\QRCode;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -61,10 +62,17 @@ class HomeController extends Controller
         $type = pathinfo($logo, PATHINFO_EXTENSION);
         $logo = file_get_contents($logo);
         $logo = 'data:image/' . $type . ';base64,' . base64_encode($logo);
+
+        QRCode::text(route('payroll',$employeePeriod->id))->setOutfile(public_path().'/qrcode/'.$title.'.png')->png();
+
+        $qrcode = public_path().'/qrcode/'.$title.'.png';
+        $type = pathinfo($qrcode, PATHINFO_EXTENSION);
+        $data = file_get_contents($qrcode);
+        $qrcode = 'data:image/' . $type . ';base64,' . base64_encode($data);
         
         $dompdf = new Dompdf();
         $dompdf->setPaper('Folio','portrait');
-        $dompdf->loadHtml(view('payroll', compact('employeePeriod','installation','title','logo')));
+        $dompdf->loadHtml(view('payroll', compact('employeePeriod','installation','title','logo','qrcode')));
         $dompdf->render();
         $dompdf->stream($title.'.pdf',array("Attachment" => false));
     }
