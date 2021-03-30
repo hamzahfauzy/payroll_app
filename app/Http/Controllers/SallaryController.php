@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sallary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class SallaryController
@@ -105,5 +106,46 @@ class SallaryController extends Controller
 
         return redirect()->route('sallaries.index')
             ->with('success', 'Sallary deleted successfully');
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->isMethod("post"))
+        {
+            $file = $request->file('file');
+            $extension = $file->extension();
+            if($extension=='xlsx'){
+                $inputFileType = 'Xlsx';
+            }else{
+                $inputFileType = 'Xls';
+            }
+            $reader     = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+             
+            $spreadsheet = $reader->load($file);
+            $worksheet   = $spreadsheet->getActiveSheet();
+            $highestRow  = $worksheet->getHighestRow();
+            $highestColumn = $worksheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            DB::beginTransaction();
+            try {
+                //code...
+                for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
+                    Sallary::create([
+                        'name' => $worksheet->getCellByColumnAndRow(2, $row)->getValue(),
+                        'sallary_type' => $worksheet->getCellByColumnAndRow(3, $row)->getValue()
+                    ]);
+                }
+                DB::commit();
+                return redirect()->route('sallaries.index')
+                    ->with('success', 'Sallary imported successfully');
+            } catch (\Throwable $th) {
+                DB::rollback();
+                // return redirect()->route('emloyees.index')
+                //     ->with('error', 'Position imported failed');
+                throw $th;
+            }
+        }
+        return view('sallary.import');
     }
 }

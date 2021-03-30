@@ -21,6 +21,21 @@
                     <div class="col-md-12">
                         @includeif('partials.errors')
                     </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h3>Absensi</h3>
+                    </div>
+                    @foreach($absensi as $absen)
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <label for="">{{$absen->attendance->name}}</label>
+                            <input type="number" name="attendance[{{$absen->attendance->id}}]" class="form-control" value="{{$absen->amount}}">
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="row">
                     <div class="col-sm-12 col-md-6">
                         {{-- FORM BONUS --}}
                         <h3>Bonus</h3>

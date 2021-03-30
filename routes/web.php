@@ -6,6 +6,7 @@ use App\Http\Controllers\SallaryController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\AllowanceController;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\EmployeePeriodController;
 
 /*
@@ -33,12 +34,14 @@ Route::middleware('installed')->group(function () {
         Route::middleware('admin')->group(function () {
             Route::match(['get', 'post'], 'positions/import', [App\Http\Controllers\PositionController::class, 'import'])->name('positions.import');
             Route::match(['get', 'post'], 'employees/import', [App\Http\Controllers\EmployeeController::class, 'import'])->name('employees.import');
+            Route::match(['get', 'post'], 'sallaries/import', [App\Http\Controllers\SallaryController::class, 'import'])->name('sallaries.import');
             
             Route::resource('positions', PositionController::class);
             Route::resource('employees', EmployeeController::class);
             Route::resource('allowances', AllowanceController::class);
             Route::resource('sallaries', SallaryController::class);
             Route::resource('periods', PeriodController::class);
+            Route::resource('attendances', AttendanceController::class);
             Route::match(['get', 'post'], 'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
             Route::get('employee-periods/{employeePeriod}/pay', [App\Http\Controllers\EmployeePeriodController::class, 'pay'])->name('employee-periods.pay');
             Route::resource('employee-periods', EmployeePeriodController::class);

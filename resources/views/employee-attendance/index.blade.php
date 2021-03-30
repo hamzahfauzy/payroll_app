@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Referensi Bonus dan Potongan
+    Employee Attendance
 @endsection
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
@@ -13,22 +13,19 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Referensi Bonus dan Potongan') }}
+                                {{ __('Employee Attendance') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('sallaries.import') }}" class="btn btn-success btn-sm">
-                                  {{ __('Import Referensi') }}
-                                </a>
-                                <a href="{{ route('sallaries.create') }}" class="btn btn-primary btn-sm">
-                                  {{ __('Buat Baru') }}
+                                <a href="{{ route('employee-attendances.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Create New') }}
                                 </a>
                               </div>
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
                         <div class="alert alert-success">
-                            {{ $message }}
+                            <p>{{ $message }}</p>
                         </div>
                     @endif
 
@@ -39,26 +36,31 @@
                                     <tr>
                                         <th>No</th>
                                         
-										<th>Nama</th>
-										<th>Tipe</th>
+										<th>Employee Id</th>
+										<th>Attendance Id</th>
+										<th>Period Id</th>
+										<th>Amount</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($sallaries as $sallary)
+                                    @foreach ($employeeAttendances as $employeeAttendance)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-											<td>{{ $sallary->name }}</td>
-											<td>{{ $sallary->sallary_type }}</td>
+											<td>{{ $employeeAttendance->employee_id }}</td>
+											<td>{{ $employeeAttendance->attendance_id }}</td>
+											<td>{{ $employeeAttendance->period_id }}</td>
+											<td>{{ $employeeAttendance->amount }}</td>
 
                                             <td>
-                                                <form action="{{ route('sallaries.destroy',$sallary->id) }}" method="POST" onsubmit="if(confirm('Apakah anda yakin menghapus data ini ?')){return true}else{return false}">
-                                                    <a class="btn btn-sm btn-success" href="{{ route('sallaries.edit',$sallary->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <form action="{{ route('employee-attendances.destroy',$employeeAttendance->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary " href="{{ route('employee-attendances.show',$employeeAttendance->id) }}"><i class="fa fa-fw fa-eye"></i> Show</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('employee-attendances.edit',$employeeAttendance->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Hapus</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -68,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $sallaries->links() !!}
+                {!! $employeeAttendances->links() !!}
             </div>
         </div>
     </div>

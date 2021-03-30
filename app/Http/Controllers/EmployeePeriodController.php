@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Period;
 use App\Models\Sallary;
 use App\Models\Employee;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use App\Models\EmployeePeriod;
 use App\Models\EmployeeSallary;
+use App\Models\EmployeeAttendance;
 
 /**
  * Class EmployeePeriodController
@@ -75,6 +77,25 @@ class EmployeePeriodController extends Controller
                         'amount' => $request->sallary[$ref->id]
                     ]);
             }
+
+            $refs_attendance = Attendance::get();
+            foreach($refs_attendance as $ref)
+            {
+                $check = EmployeeAttendance::where('period_id', $employeePeriod->period_id)
+                ->where('employee_id', $employeePeriod->employee_id)
+                ->where('attendance_id', $ref->id);
+                if ($check->exists()) {
+                    $check->first()->update([
+                        'amount' => $request->attendance[$ref->id]
+                    ]);
+                } else
+                    EmployeeAttendance::create([
+                        'period_id' => $employeePeriod->period_id,
+                        'employee_id' => $employeePeriod->employee_id,
+                        'attendance_id' => $ref->id,
+                        'amount' => $request->attendance[$ref->id]
+                    ]);
+            }
             return redirect()->route('employee-periods.index', ['period' => $employeePeriod->period_id])
                 ->with('success', 'Gaji Karyawan ' . $employeePeriod->employee->name . ' berhasil diupdate');
         }
@@ -92,9 +113,26 @@ class EmployeePeriodController extends Controller
                 ]);
         }
 
+        $refs = Attendance::get();
+        foreach ($refs as $ref) {
+            $check = EmployeeAttendance::where('period_id', $employeePeriod->period_id)
+                ->where('employee_id', $employeePeriod->employee_id)
+                ->where('attendance_id', $ref->id)->exists();
+            if (!$check)
+                EmployeeAttendance::create([
+                    'period_id' => $employeePeriod->period_id,
+                    'employee_id' => $employeePeriod->employee_id,
+                    'attendance_id' => $ref->id,
+                    'amount' => 0,
+                ]);
+        }
+
         // sallary group
         $sallaries = EmployeeSallary::where('period_id', $employeePeriod->period_id)
             ->where('employee_id', $employeePeriod->employee_id)->get();
+
+        $absensi = EmployeeAttendance::where('period_id', $employeePeriod->period_id)
+        ->where('employee_id', $employeePeriod->employee_id)->get();
 
         $bonus = [];
         $potongan = [];
@@ -105,7 +143,7 @@ class EmployeePeriodController extends Controller
                 $potongan[] = $sallary;
         }
 
-        return view('employee-period.sallary-panel', compact('employeePeriod', 'bonus', 'potongan'));
+        return view('employee-period.sallary-panel', compact('employeePeriod', 'bonus', 'potongan','absensi'));
     }
 
     /**

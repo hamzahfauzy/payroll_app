@@ -60,6 +60,11 @@ class EmployeePeriod extends Model
         return $this->hasMany('App\Models\EmployeeSallary', 'period_id', 'period_id', 'employee_id', 'employee_id');
     }
 
+    public function attendances()
+    {
+        return $this->hasMany('App\Models\EmployeeAttendance', 'period_id', 'period_id', 'employee_id', 'employee_id');
+    }
+
     public function getAllPotonganAttribute()
     {
         $ref_potongan = Sallary::where('sallary_type', 'Potongan')->get()->pluck('id');

@@ -99,29 +99,37 @@
 
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
+            <th style="padding:3px">ABSENSI</th>
             <th style="padding:3px">PENDAPATAN</th>
             <th style="padding:3px">POTONGAN</th>
         </tr>
         <tr>
             <td style="vertical-align: top;padding:3px">
-                <p class="p6">Gaji Pokok <b class="right">{{number_format($employeePeriod->employee->gaji_pokok)}}</b>
+                @foreach($employeePeriod->attendances as $key => $value)
+                <p class="p6">{{$value->attendance->name}} <b class="right">: {{number_format($value->amount)}}</b></p>
+                @endforeach
+            </td>
+            <td style="vertical-align: top;padding:3px">
+                <p class="p6">Gaji Pokok <b class="right">: {{number_format($employeePeriod->employee->gaji_pokok)}}</b>
                 @foreach($employeePeriod->all_bonus as $key => $value)
-                <p class="p6">{{$value->sallary->name}} <b class="right">{{number_format($value->amount)}}</b></p>
+                <p class="p6">{{$value->sallary->name}} <b class="right">: {{number_format($value->amount)}}</b></p>
                 @endforeach
             </td>
             <td style="vertical-align: top;padding:3px">
                 @forelse($employeePeriod->all_potongan as $key => $value)
-                <p class="p6">{{$value->sallary->name}} <b class="right">{{number_format($value->amount)}}</b></p>
+                <p class="p6">{{$value->sallary->name}} <b class="right">: {{number_format($value->amount)}}</b></p>
                 @empty
                 <i>Tidak ada potongan</i>
                 @endforelse
             </td>
         </tr>
         <tr>
+            <td><p class="p6"> </td>
             <td><p class="p6"><b>GAJI KOTOR</b> <b class="right">{{number_format($employeePeriod->bonus+$employeePeriod->employee->gaji_pokok)}}</b></p></td>
             <td><p class="p6"><b>TOTAL POTONGAN</b> <b class="right">{{number_format($employeePeriod->potongan)}}</b></p></td>
         </tr>
         <tr>
+            <td style="border-right: 0px"></td>
             <td style="border-right: 0px"></td>
             <td style="padding:3px;border-left: 0px">
                 <p class="p6"><b>TOTAL PENERIMAAN </b> <b class="right">{{$employeePeriod->sallary_total_format}}</b></p>

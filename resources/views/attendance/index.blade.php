@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Referensi Bonus dan Potongan
+    Absensi
 @endsection
 
 @section('content')
@@ -13,14 +13,11 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Referensi Bonus dan Potongan') }}
+                                {{ __('Absensi') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('sallaries.import') }}" class="btn btn-success btn-sm">
-                                  {{ __('Import Referensi') }}
-                                </a>
-                                <a href="{{ route('sallaries.create') }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('attendances.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
                                   {{ __('Buat Baru') }}
                                 </a>
                               </div>
@@ -40,25 +37,23 @@
                                         <th>No</th>
                                         
 										<th>Nama</th>
-										<th>Tipe</th>
 
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($sallaries as $sallary)
+                                    @foreach ($attendances as $attendance)
                                         <tr>
                                             <td>{{ ++$i }}</td>
                                             
-											<td>{{ $sallary->name }}</td>
-											<td>{{ $sallary->sallary_type }}</td>
+											<td>{{ $attendance->name }}</td>
 
                                             <td>
-                                                <form action="{{ route('sallaries.destroy',$sallary->id) }}" method="POST" onsubmit="if(confirm('Apakah anda yakin menghapus data ini ?')){return true}else{return false}">
-                                                    <a class="btn btn-sm btn-success" href="{{ route('sallaries.edit',$sallary->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
+                                                <form action="{{ route('attendances.destroy',$attendance->id) }}" method="POST" onsubmit="if(confirm('Apakah anda yakin menghapus data ini ?')){return true}else{return false}">
+                                                    <a class="btn btn-sm btn-success" href="{{ route('attendances.edit',$attendance->id) }}"><i class="fa fa-fw fa-edit"></i> Edit</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Hapus</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-fw fa-trash"></i> Delete</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -68,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $sallaries->links() !!}
+                {!! $attendances->links() !!}
             </div>
         </div>
     </div>

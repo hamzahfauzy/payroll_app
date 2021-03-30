@@ -177,8 +177,8 @@ class EmployeeController extends Controller
                 for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
                     $user = User::create([
                         'name' => $worksheet->getCellByColumnAndRow(5, $row)->getValue(),
-                        'email' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
-                        'password' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
+                        'email' => $worksheet->getCellByColumnAndRow(9, $row)->getValue(),
+                        'password' => $worksheet->getCellByColumnAndRow(10, $row)->getValue(),
                     ]);
                     $position = Position::where('name',$worksheet->getCellByColumnAndRow(2, $row)->getValue())->first();
                     Employee::create([

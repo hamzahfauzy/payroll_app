@@ -72,6 +72,9 @@
                                     <a class="dropdown-item" href="{{ route('sallaries.index') }}">
                                         {{ __('Master Referensi') }}
                                     </a>
+                                    <a class="dropdown-item" href="{{ route('attendances.index') }}">
+                                        {{ __('Master Absensi') }}
+                                    </a>
                                 </div>
                             </li>
                             <li class="nav-item">
