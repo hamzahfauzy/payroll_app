@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Awobaz\Compoships\Compoships;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -22,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EmployeePeriod extends Model
 {
+
+    use Compoships;
 
     static $rules = [
         'employee_id' => 'required',
@@ -57,12 +60,12 @@ class EmployeePeriod extends Model
 
     public function sallaries()
     {
-        return $this->hasMany('App\Models\EmployeeSallary', 'period_id', 'period_id', 'employee_id', 'employee_id');
+        return $this->hasMany('App\Models\EmployeeSallary', ['period_id', 'employee_id'], ['period_id', 'employee_id']);
     }
 
     public function attendances()
     {
-        return $this->hasMany('App\Models\EmployeeAttendance', 'period_id', 'period_id', 'employee_id', 'employee_id');
+        return $this->hasMany('App\Models\EmployeeAttendance', ['period_id', 'employee_id'], ['period_id', 'employee_id']);
     }
 
     public function getAllPotonganAttribute()

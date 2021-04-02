@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\EmployeePeriod;
 use App\Models\EmployeeSallary;
 use App\Models\EmployeeAttendance;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class EmployeePeriodController
@@ -227,5 +228,157 @@ class EmployeePeriodController extends Controller
 
         return redirect()->route('employee-periods.index')
             ->with('success', 'EmployeePeriod deleted successfully');
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->isMethod("post"))
+        {
+            $request->validate([
+                'period' => 'required',
+                'file'   => 'required'
+            ]);
+            $file = $request->file('file');
+            $extension = $file->extension();
+            if($extension=='xlsx'){
+                $inputFileType = 'Xlsx';
+            }else{
+                $inputFileType = 'Xls';
+            }
+            $reader     = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+             
+            $spreadsheet = $reader->load($file);
+            $worksheet   = $spreadsheet->getActiveSheet();
+            $highestRow  = $worksheet->getHighestRow();
+            $highestColumn = $worksheet->getHighestColumn();
+            $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+
+            $attendances = new Attendance;
+            $bonus       = Sallary::where('sallary_type','Bonus');
+            $potongan    = Sallary::where('sallary_type','Potongan');
+
+            DB::beginTransaction();
+            try {
+                //code...
+                $absensi_start = 4;
+                $absensi_end   = $absensi_start + $attendances->count();
+                $bonus_start   = $absensi_end;
+                $bonus_end     = $bonus_start + $bonus->count();
+                $potongan_start = $bonus_end;
+                $potongan_end  = $potongan_start + $potongan->count();
+
+                $attendances = $attendances->get();
+                $bonus       = $bonus->get();
+                $potongan    = $potongan->get();
+                for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
+                    $employee = Employee::where('NIK',$worksheet->getCellByColumnAndRow(2, $row)->getValue())->first();
+                    EmployeeAttendance::where('employee_id',$employee->id)
+                        ->where('period_id',$request->period)
+                        ->delete();
+
+                    EmployeeSallary::where('employee_id',$employee->id)
+                        ->where('period_id',$request->period)
+                        ->delete();
+                    $absensis = [];
+                    for($i=$absensi_start;$i<$absensi_end;$i++)
+                    {
+                        $index = $i-$absensi_start;
+                        $absensis[] = [
+                            'attendance_id' => $attendances[$index]->id,
+                            'period_id' => $request->period,
+                            'employee_id' => $employee->id,
+                            'amount' => $worksheet->getCellByColumnAndRow($i, $row)->getValue()
+                        ];
+                    }
+                    EmployeeAttendance::insert($absensis);
+
+                    $sallary_bonus = [];
+                    for($i=$bonus_start;$i<$bonus_end;$i++)
+                    {
+                        $index = $i-$bonus_start;
+                        $sallary_bonus[] = [
+                            'sallary_id' => $bonus[$index]->id,
+                            'period_id' => $request->period,
+                            'employee_id' => $employee->id,
+                            'amount' => $worksheet->getCellByColumnAndRow($i, $row)->getValue()
+                        ];
+                    }
+                    EmployeeSallary::insert($sallary_bonus);
+
+                    $sallary_potongan = [];
+                    for($i=$potongan_start;$i<$potongan_end;$i++)
+                    {
+                        $index = $i-$potongan_start;
+                        $sallary_potongan[] = [
+                            'sallary_id' => $potongan[$index]->id,
+                            'period_id' => $request->period,
+                            'employee_id' => $employee->id,
+                            'amount' => $worksheet->getCellByColumnAndRow($i, $row)->getValue()
+                        ];
+                    }
+                    EmployeeSallary::insert($sallary_potongan);
+                }
+                DB::commit();
+                return redirect()->route('employee-periods.index',['period'=>$request->period])
+                    ->with('success', 'Employee Sallary imported successfully');
+            } catch (\Throwable $th) {
+                DB::rollback();
+                // return redirect()->route('emloyees.index')
+                //     ->with('error', 'Position imported failed');
+                throw $th;
+            }
+        }
+        $periods = Period::get()->pluck('name', 'id');
+        return view('employee-period.import',compact('periods'));
+    }
+
+    public function download()
+    {
+        $employees   = Employee::get();
+        $attendances = Attendance::get();
+        $bonus       = Sallary::where('sallary_type','Bonus')->get();
+        $potongan    = Sallary::where('sallary_type','Potongan')->get();
+
+        $employees_row = "";
+        foreach($employees as $key => $employee)
+        {
+            $employees_row .= "<tr><td>".($key+1)."</td><td>".$employee->NIK."</td><td>".$employee->name."</td>";
+            foreach($attendances as $attendance)
+                $employees_row .= "<td></td>";
+            foreach($bonus as $value)
+                $employees_row .= "<td></td>";
+            foreach($potongan as $value)
+                $employees_row .= "<td></td>";
+            $employees_row .= "</tr>";
+        }
+
+        $html = "
+        <table>
+            <tr>
+                <td>No</td>
+                <td>NIK</td>
+                <td>NAMA</td>";
+        foreach($attendances as $attendance)
+            $html .= "<td>$attendance->name</td>";
+        foreach($bonus as $value)
+            $html .= "<td>$value->name</td>";
+        foreach($potongan as $value)
+            $html .= "<td>$value->name</td>";
+        $html .= "
+            </tr>
+            $employees_row
+        </table>
+        ";
+
+        $filename = 'format-import/import-'.date('Y-m-d').'.xls';
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
+        $spreadsheet = $reader->loadFromString($html);
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer->save($filename); 
+
+        return redirect($filename);
+
     }
 }

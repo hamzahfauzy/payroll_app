@@ -43,6 +43,8 @@ Route::middleware('installed')->group(function () {
             Route::resource('periods', PeriodController::class);
             Route::resource('attendances', AttendanceController::class);
             Route::match(['get', 'post'], 'employee-periods/{employeePeriod}/sallary-panel', [App\Http\Controllers\EmployeePeriodController::class, 'sallaryPanel'])->name('employee-periods.sallary-panel');
+            Route::match(['get', 'post'], 'employee-periods/import', [App\Http\Controllers\EmployeePeriodController::class, 'import'])->name('employee-periods.import');
+            Route::get('employee-periods/download', [App\Http\Controllers\EmployeePeriodController::class, 'download'])->name('employee-periods.download');
             Route::get('employee-periods/{employeePeriod}/pay', [App\Http\Controllers\EmployeePeriodController::class, 'pay'])->name('employee-periods.pay');
             Route::resource('employee-periods', EmployeePeriodController::class);
         });

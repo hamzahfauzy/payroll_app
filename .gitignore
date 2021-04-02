@@ -4,6 +4,7 @@
 /public/qrcode
 /storage/*.key
 /vendor
+/public/format-import
 .env
 .env.backup
 .phpunit.result.cache

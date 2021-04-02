@@ -11,10 +11,19 @@ Gaji Karyawan
             <div class="card">
                 <div class="card-header">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-
                         <span id="card_title">
                             {{ __('Gaji Karyawan') }}
                         </span>
+
+                        <div class="float-right">
+                            <a href="{{ route('employee-periods.import') }}" class="btn btn-success btn-sm">
+                                {{ __('Import Gaji') }}
+                            </a>
+
+                            <a href="{{ route('employee-periods.download') }}" class="btn btn-primary btn-sm">
+                                {{ __('Download Format Import') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
                 @if ($message = Session::get('success'))
