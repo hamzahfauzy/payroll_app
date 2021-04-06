@@ -106,7 +106,7 @@
         <tr>
             <td style="vertical-align: top;padding:3px">
                 @foreach($employeePeriod->attendances as $key => $value)
-                <p class="p6">{{$value->attendance->name}} <b class="right">: {{number_format($value->amount)}}</b></p>
+                <p class="p6">{{$value->attendance->name}} <b class="right">: {{$value->amount}}</b></p>
                 @endforeach
             </td>
             <td style="vertical-align: top;padding:3px">
