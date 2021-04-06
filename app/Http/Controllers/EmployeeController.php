@@ -180,7 +180,16 @@ class EmployeeController extends Controller
                         'email' => $worksheet->getCellByColumnAndRow(9, $row)->getValue(),
                         'password' => $worksheet->getCellByColumnAndRow(10, $row)->getValue(),
                     ]);
-                    $position = Position::where('name',$worksheet->getCellByColumnAndRow(2, $row)->getValue())->first();
+                    $position = Position::where('name',$worksheet->getCellByColumnAndRow(2, $row)->getValue());
+                    if(!$position->exists())
+                    {
+                        $position = Position::create([
+                            'name' => $worksheet->getCellByColumnAndRow(2, $row)->getValue(),
+                            'sallary' => 0,
+                            'cost' => 0,
+                        ]);
+                    }
+                    else $position = $position->first();
                     Employee::create([
                         'position_id' => $position->id,
                         'user_id' => $user->id,
