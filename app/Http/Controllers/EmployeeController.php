@@ -175,6 +175,7 @@ class EmployeeController extends Controller
             try {
                 //code...
                 for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
+                    if(User::where('email',$worksheet->getCellByColumnAndRow(9, $row)->getValue())->exists()) continue;
                     $user = User::create([
                         'name' => $worksheet->getCellByColumnAndRow(5, $row)->getValue(),
                         'email' => $worksheet->getCellByColumnAndRow(9, $row)->getValue(),
