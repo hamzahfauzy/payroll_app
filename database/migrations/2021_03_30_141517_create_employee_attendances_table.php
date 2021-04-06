@@ -18,7 +18,7 @@ class CreateEmployeeAttendancesTable extends Migration
             $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
             $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
             $table->foreignId('period_id')->constrained()->cascadeOnDelete();
-            $table->integer('amount');
+            $table->string('amount');
             $table->timestamps();
         });
     }
