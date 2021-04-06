@@ -175,12 +175,19 @@ class EmployeeController extends Controller
             try {
                 //code...
                 for ($row = 2; $row <= $highestRow; $row++) { //$row = 2 artinya baris kedua yang dibaca dulu(header kolom diskip disesuaikan saja)
-                    if(User::where('email',$worksheet->getCellByColumnAndRow(9, $row)->getValue())->exists()) continue;
-                    $user = User::create([
+                    $data_user = [
                         'name' => $worksheet->getCellByColumnAndRow(5, $row)->getValue(),
                         'email' => $worksheet->getCellByColumnAndRow(9, $row)->getValue(),
                         'password' => $worksheet->getCellByColumnAndRow(10, $row)->getValue(),
-                    ]);
+                    ];
+                    if(User::where('email',$worksheet->getCellByColumnAndRow(9, $row)->getValue())->exists())
+                    {
+                        $user = User::where('email',$worksheet->getCellByColumnAndRow(9, $row)->getValue())->first();
+                        $user->update($data_user);
+                        continue;
+                    }
+                    else
+                        $user = User::create($data_user);
                     $position = Position::where('name',$worksheet->getCellByColumnAndRow(2, $row)->getValue());
                     if(!$position->exists())
                     {
