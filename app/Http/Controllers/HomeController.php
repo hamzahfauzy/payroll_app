@@ -87,8 +87,8 @@ class HomeController extends Controller
         
         // Specify watermark image 
         $imageURL = public_path().Storage::url($installation->slip_watermark); 
-        $imgWidth = 100; 
-        $imgHeight = 100; 
+        $imgWidth = 400; 
+        $imgHeight = 400; 
         
         // Set image opacity 
         $canvas->set_opacity(.15); 
