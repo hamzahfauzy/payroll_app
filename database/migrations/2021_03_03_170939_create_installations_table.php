@@ -18,6 +18,7 @@ class CreateInstallationsTable extends Migration
             $table->string('company_name');
             $table->string('phone_number');
             $table->string('logo');
+            $table->string('slip_watermark');
             $table->text('address');
             $table->string('email');
             $table->string('postal_code');

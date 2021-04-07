@@ -203,6 +203,18 @@
                     </span>
                     @enderror
                 </div>
+
+                <div class="form-group">
+                    <label for="slip_watermark">{{ __('Slip Watermark') }}</label>
+
+                    <input id="slip_watermark" type="file" class="form-control @error('slip_watermark') is-invalid @enderror" name="slip_watermark" style="height: auto">
+
+                    @error('slip_watermark')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+                </div>
             </div>
 
             @endif

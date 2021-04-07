@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Models\User;
 use App\Models\Period;
 use App\Models\Employee;
@@ -69,11 +70,36 @@ class HomeController extends Controller
         $type = pathinfo($qrcode, PATHINFO_EXTENSION);
         $data = file_get_contents($qrcode);
         $qrcode = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        $options = new Options(); 
+        $options->set('isPhpEnabled', 'true'); 
         
-        $dompdf = new Dompdf();
+        $dompdf = new Dompdf($options);
         $dompdf->setPaper('Folio','portrait');
         $dompdf->loadHtml(view('payroll', compact('employeePeriod','installation','title','logo','qrcode')));
         $dompdf->render();
+
+        $canvas = $dompdf->getCanvas(); 
+ 
+        // Get height and width of page 
+        $w = $canvas->get_width(); 
+        $h = $canvas->get_height(); 
+        
+        // Specify watermark image 
+        $imageURL = public_path().Storage::url($installation->slip_watermark); 
+        $imgWidth = 100; 
+        $imgHeight = 100; 
+        
+        // Set image opacity 
+        $canvas->set_opacity(.15); 
+        
+        // Specify horizontal and vertical position 
+        $x = (($w-$imgWidth)/2); 
+        $y = (($h-$imgHeight)/2); 
+        
+        // Add an image to the pdf 
+        $canvas->image($imageURL, $x, $y, $imgWidth, $imgHeight); 
+
         $dompdf->stream($title.'.pdf',array("Attachment" => false));
     }
 
@@ -102,6 +128,7 @@ class HomeController extends Controller
                     'company_email' => 'required',
                     'postal_code' => 'required',
                     'logo' => 'nullable|file|max:500',
+                    'slip_watermark' => 'nullable|file|max:500',
                 ]);
 
                 $user->update([
@@ -113,6 +140,7 @@ class HomeController extends Controller
                     $user->update(['password'=>$request->password]);
 
                 $logo = $request->file('logo') ? $request->file('logo')->store('public/logo') : $this->installation->logo;
+                $slip_watermark = $request->file('slip_watermark') ? $request->file('slip_watermark')->store('public/slip_watermark') : $this->installation->slip_watermark;
 
                 $install = $this->installation->update([
                     'company_name' => $request->company_name,
@@ -120,7 +148,8 @@ class HomeController extends Controller
                     'phone_number' => $request->phone_number,
                     'address' => $request->address,
                     'postal_code' => $request->postal_code,
-                    'logo' => $logo
+                    'logo' => $logo,
+                    'slip_watermark' => $slip_watermark,
                 ]);
 
                 if ($install) {
@@ -194,8 +223,10 @@ class HomeController extends Controller
                 'email' => 'required',
                 'password' => 'required',
                 'logo' => 'required|file|max:500',
+                'slip_watermark' => 'required|file|max:500',
             ]);
             $logo = $request->file('logo')->store('public/logo');
+            $slip_watermark = $request->file('slip_watermark')->store('public/slip_watermark');
             Installation::create([
                 'company_name' => $request->company_name,
                 'email' => $request->company_email,
@@ -203,6 +234,7 @@ class HomeController extends Controller
                 'address' => $request->address,
                 'postal_code' => $request->postal_code,
                 'logo' => $logo,
+                'slip_watermark' => $slip_watermark,
             ]);
 
             User::create([
