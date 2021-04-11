@@ -42,6 +42,7 @@ class EmployeePeriodController extends Controller
         }
 
         $employeePeriods = EmployeePeriod::where('period_id', $period)->paginate();
+        $employeePeriods->appends(['period'=>$period]);
 
         return view('employee-period.index', compact('employeePeriods', 'period', 'periods'))
             ->with('i', (request()->input('page', 1) - 1) * $employeePeriods->perPage());
