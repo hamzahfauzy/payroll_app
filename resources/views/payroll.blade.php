@@ -110,7 +110,7 @@
                 @endforeach
             </td>
             <td style="vertical-align: top;padding:3px">
-                <p class="p6">Gaji Pokok <b class="right">: {{number_format($employeePeriod->employee->gaji_pokok)}}</b>
+                {{-- <p class="p6">Gaji Pokok <b class="right">: {{number_format($employeePeriod->employee->gaji_pokok)}}</b> --}}
                 @foreach($employeePeriod->all_bonus as $key => $value)
                 <p class="p6">{{$value->sallary->name}} <b class="right">: {{number_format($value->amount)}}</b></p>
                 @endforeach
