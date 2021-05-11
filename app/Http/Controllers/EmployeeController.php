@@ -185,7 +185,6 @@ class EmployeeController extends Controller
                     {
                         $user = User::where('email',$worksheet->getCellByColumnAndRow(9, $row)->getValue())->first();
                         $user->update($data_user);
-                        continue;
                     }
                     else
                         $user = User::create($data_user);
@@ -199,7 +198,9 @@ class EmployeeController extends Controller
                         ]);
                     }
                     else $position = $position->first();
-                    Employee::create([
+                    Employee::updateOrCreate([
+                        'user_id' => $user->id
+                    ],[
                         'position_id' => $position->id,
                         'user_id' => $user->id,
                         'NIK' => $worksheet->getCellByColumnAndRow(3, $row)->getValue(),
@@ -221,5 +222,14 @@ class EmployeeController extends Controller
             }
         }
         return view('employee.import');
+    }
+
+    public function deleteAll()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Employee::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee deleted successfully');
     }
 }

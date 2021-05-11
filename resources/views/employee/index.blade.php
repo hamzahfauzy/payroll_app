@@ -17,6 +17,10 @@
                             </span>
 
                             <div class="float-right">
+                                <a href="{{ route('employees.delete-all') }}" onclick="if(confirm('Apakah anda yakin akan menghapus semua data karyawan')){return true}else{return false}" class="btn btn-danger btn-sm">
+                                  {{ __('Hapus Semua Karyawan') }}
+                                </a>
+
                                 <a href="{{ route('employees.import') }}" class="btn btn-success btn-sm">
                                   {{ __('Import Karyawan') }}
                                 </a>

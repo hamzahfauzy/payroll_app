@@ -37,6 +37,7 @@ Route::middleware('installed')->group(function () {
             Route::match(['get', 'post'], 'sallaries/import', [App\Http\Controllers\SallaryController::class, 'import'])->name('sallaries.import');
             
             Route::resource('positions', PositionController::class);
+            Route::get('employees/delete-all', [EmployeeController::class,'deleteAll'])->name('employees.delete-all');
             Route::resource('employees', EmployeeController::class);
             Route::resource('allowances', AllowanceController::class);
             Route::resource('sallaries', SallaryController::class);
