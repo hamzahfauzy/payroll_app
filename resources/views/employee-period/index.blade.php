@@ -36,6 +36,9 @@ Gaji Karyawan
                     <form action="" name="filter">
                         {!! Form::select('period', $periods, $period, ['required', 'class'=>'form-control','placeholder'=>'- Pilih Periode -','onchange'=>'filter.submit()']) !!}
                     </form>
+                    <form action="{{route('employee-periods.bulk-download')}}" name="bulk-export" method="post">
+                    @csrf
+                    <input type="hidden" name="period" value="{{$_GET['period']??0}}">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead class="thead">
@@ -53,7 +56,7 @@ Gaji Karyawan
                             <tbody>
                                 @foreach ($employeePeriods as $employeePeriod)
                                 <tr>
-                                    <td>{{ ++$i }}</td>
+                                    <td><input type="checkbox" name="download[]" value="{{$employeePeriod->id}}"></td>
 
                                     <td>{{ $employeePeriod->employee->name }}</td>
                                     <td>{{ $employeePeriod->period->name }}</td>
@@ -75,7 +78,12 @@ Gaji Karyawan
                                 @endforeach
                             </tbody>
                         </table>
+                        @if(count($employeePeriods))
+                        <button class="btn btn-success" name="action" value="terpilih">Download Terpilih</button>
+                        <button class="btn btn-success" name="action" value="semua">Download Semua</button>
+                        @endif
                     </div>
+                    </form>
                 </div>
             </div>
             {!! $employeePeriods->links() !!}

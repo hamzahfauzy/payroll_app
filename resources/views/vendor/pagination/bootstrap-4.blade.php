@@ -42,6 +42,23 @@
                     <span class="page-link" aria-hidden="true">&rsaquo;</span>
                 </li>
             @endif
+            <span class="page-link" style="padding:5px;">
+                <form action="" name="goto" class="form-inline">
+                    @if(isset($_GET['period']))
+                    <input type="hidden" name="period" value="{{$_GET['period']}}">
+                    @endif
+                    <div class="form-group">
+                        <label for="">
+                        Go To Page &nbsp;
+                        </label>
+                        <input type="text" name="page" size="10">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" style="padding:4px 8px;line-height:1;margin-left:10px;">Submit</button>
+                    </div>
+                </form>
+            </span>
         </ul>
+        
     </nav>
 @endif

@@ -32,7 +32,7 @@ class EmployeePeriod extends Model
         'status' => 'required',
     ];
 
-    protected $perPage = 20;
+    protected $perPage = 10;
 
     /**
      * Attributes that should be mass-assignable.

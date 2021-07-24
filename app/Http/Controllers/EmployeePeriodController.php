@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use App\Models\Period;
 use App\Models\Sallary;
 use App\Models\Employee;
 use App\Models\Attendance;
+use App\Models\Installation;
 use Illuminate\Http\Request;
 use App\Models\EmployeePeriod;
 use App\Models\EmployeeSallary;
+use LaravelQRCode\Facades\QRCode;
 use App\Models\EmployeeAttendance;
 use Illuminate\Support\Facades\DB;
 
@@ -381,5 +385,96 @@ class EmployeePeriodController extends Controller
 
         return redirect($filename);
 
+    }
+
+    public function bulkdownload(Request $request)
+    {
+        if($request->action == 'terpilih')
+            $employeePeriods = EmployeePeriod::whereIn('id',$request->download)->get();
+        elseif($request->action == 'semua')
+            $employeePeriods = EmployeePeriod::where('period_id',$request->period)->get();
+        $installation = Installation::first();
+        $logo = public_path().\Storage::url($installation->logo);
+        $type = pathinfo($logo, PATHINFO_EXTENSION);
+        $logo = file_get_contents($logo);
+        $logo = 'data:image/' . $type . ';base64,' . base64_encode($logo);
+
+        $report = "
+        <style>
+            h3,p {
+                margin:0;
+                padding:0;
+            }
+
+            hr {
+                margin: 12px 0;
+            }
+
+            body {
+                padding: 24px;
+                font-size:12px;
+            }
+
+            table {
+                width: 100%;
+            }
+
+            .p6 {
+                padding:3px;
+            }
+
+            #ttd {
+                margin-top: 12px;
+            }
+
+            .right {
+                text-align: right;
+            }
+
+            .t-right {
+                text-align: right;
+            }
+            #watermark {
+                position: absolute;
+                top: 45%;
+                width: 100%;
+                text-align: center;
+                opacity: .15;
+                transform: rotate(10deg);
+                transform-origin: 50% 50%;
+                z-index: -1000;
+            }
+            .page_break { page-break-after: always; }
+            .page_break:last-child { page-break-after: avoid; }
+        </style>
+        ";
+        foreach($employeePeriods as $employeePeriod)
+        {
+            $title = 'SLIP-'.$employeePeriod->employee->NIK.'-'.$employeePeriod->period->name;
+            QRCode::text(route('payroll',$employeePeriod->id))->setOutfile(public_path().'/qrcode/'.$title.'.png')->png();
+            $qrcode = public_path().'/qrcode/'.$title.'.png';
+            $type = pathinfo($qrcode, PATHINFO_EXTENSION);
+            $data = file_get_contents($qrcode);
+            $qrcode = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            $wm = public_path().\Storage::url($installation->slip_watermark);
+            $type = pathinfo($wm, PATHINFO_EXTENSION);
+            $wm = file_get_contents($wm);
+            $wm = 'data:image/' . $type . ';base64,' . base64_encode($wm);
+            $report .= view('employee-period.download', compact('employeePeriod','installation','title','logo','qrcode','wm'))->render();
+        }
+
+        // return $report;
+
+        $options = new Options(); 
+        $options->set('isPhpEnabled', 'true'); 
+        
+        $dompdf = new Dompdf($options);
+        $dompdf->setPaper('Folio','portrait');
+
+
+        $dompdf->loadHtml($report);
+        $dompdf->render();
+
+        $dompdf->stream('download.pdf',array("Attachment" => false));
     }
 }
