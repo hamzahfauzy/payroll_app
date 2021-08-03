@@ -387,94 +387,58 @@ class EmployeePeriodController extends Controller
 
     }
 
-    public function bulkdownload(Request $request)
-    {
+    public function bulkdownload(Request $request){
+
+        $period = Period::find($request->period);
+
         if($request->action == 'terpilih')
             $employeePeriods = EmployeePeriod::whereIn('id',$request->download)->get();
         elseif($request->action == 'semua')
             $employeePeriods = EmployeePeriod::where('period_id',$request->period)->get();
-        $installation = Installation::first();
-        $logo = public_path().\Storage::url($installation->logo);
-        $type = pathinfo($logo, PATHINFO_EXTENSION);
-        $logo = file_get_contents($logo);
-        $logo = 'data:image/' . $type . ';base64,' . base64_encode($logo);
 
-        $report = "
-        <style>
-            h3,p {
-                margin:0;
-                padding:0;
-            }
+        $attendances = Attendance::get();
+        $bonus       = Sallary::where('sallary_type','Bonus')->get();
+        $potongan    = Sallary::where('sallary_type','Potongan')->get();
 
-            hr {
-                margin: 12px 0;
-            }
-
-            body {
-                padding: 24px;
-                font-size:12px;
-            }
-
-            table {
-                width: 100%;
-            }
-
-            .p6 {
-                padding:3px;
-            }
-
-            #ttd {
-                margin-top: 12px;
-            }
-
-            .right {
-                text-align: right;
-            }
-
-            .t-right {
-                text-align: right;
-            }
-            #watermark {
-                position: absolute;
-                top: 45%;
-                width: 100%;
-                text-align: center;
-                opacity: .15;
-                transform: rotate(10deg);
-                transform-origin: 50% 50%;
-                z-index: -1000;
-            }
-            .page_break { page-break-after: always; }
-            .page_break:last-child { page-break-after: avoid; }
-        </style>
-        ";
-        foreach($employeePeriods as $employeePeriod)
+        $employees_row = "";
+        foreach($employeePeriods as $key => $employee)
         {
-            $title = 'SLIP-'.$employeePeriod->employee->NIK.'-'.$employeePeriod->period->name;
-            QRCode::text(route('payroll',$employeePeriod->id))->setOutfile(public_path().'/qrcode/'.$title.'.png')->png();
-            $qrcode = public_path().'/qrcode/'.$title.'.png';
-            $type = pathinfo($qrcode, PATHINFO_EXTENSION);
-            $data = file_get_contents($qrcode);
-            $qrcode = 'data:image/' . $type . ';base64,' . base64_encode($data);
-            $wm = public_path().\Storage::url($installation->slip_watermark);
-            $type = pathinfo($wm, PATHINFO_EXTENSION);
-            $wm = file_get_contents($wm);
-            $wm = 'data:image/' . $type . ';base64,' . base64_encode($wm);
-            $report .= view('employee-period.download', compact('employeePeriod','installation','title','logo','qrcode','wm'))->render();
+            $employees_row .= "<tr><td>".($key+1)."</td><td>".$employee->employee->NIK."</td><td>".$employee->employee->name."</td>";
+            foreach($employee->attendances as $attendance)
+                $employees_row .= "<td>$attendance->amount</td>";
+            foreach($employee->all_bonus as $value)
+                $employees_row .= "<td>$value->amount</td>";
+            foreach($employee->all_potongan as $value)
+                $employees_row .= "<td>$value->amount</td>";
+            $employees_row .= "</tr>";
         }
 
-        // return $report;
+        $html = "
+        <table>
+            <tr>
+                <td>No</td>
+                <td>NIK</td>
+                <td>NAMA</td>";
+        foreach($attendances as $attendance)
+            $html .= "<td>$attendance->name</td>";
+        foreach($bonus as $value)
+            $html .= "<td>$value->name</td>";
+        foreach($potongan as $value)
+            $html .= "<td>$value->name</td>";
+        $html .= "
+            </tr>
+            $employees_row
+        </table>
+        ";
 
-        $options = new Options(); 
-        $options->set('isPhpEnabled', 'true'); 
-        
-        $dompdf = new Dompdf($options);
-        $dompdf->setPaper('Folio','portrait');
+        $filename = 'format-export/export-'.$period->name.'.xls';
 
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
+        $spreadsheet = $reader->loadFromString($html);
 
-        $dompdf->loadHtml($report);
-        $dompdf->render();
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer->save($filename); 
 
-        $dompdf->stream('download.pdf',array("Attachment" => false));
+        return redirect($filename);
     }
 }
