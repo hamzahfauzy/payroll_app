@@ -41,6 +41,53 @@ class EmployeeController extends Controller
             ->with('i', (request()->input('page', 1) - 1) * $employees->perPage());
     }
 
+    public function export()
+    {
+        $employees   = Employee::with('position')->get();
+
+        $employees_row = "";
+        foreach($employees as $key => $employee)
+        {
+            $employees_row .= "<tr>
+            <td>".($key+1)."</td>
+            <td>".$employee->NPWP."</td>
+            <td>".$employee->NIK."</td>
+            <td>".$employee->name."</td>
+            <td>".str_replace('&',' dan ', $employee->jabatan)."</td>
+            <td>".$employee->work_around."</td>
+            <td>".$employee->bank_account."</td>
+            <td>".$employee->main_sallary."</td>
+            </tr>
+            ";
+        }
+
+        $html = "
+        <table>
+            <tr>
+                <td>No</td>
+                <td>NIK</td>
+                <td>NPWP</td>
+                <td>NAMA</td>
+                <td>JABATAN</td>
+                <td>AREA KERJA</td>
+                <td>NO REKENING</td>
+                <td>GAJI POKOK</td>
+            </tr>
+            $employees_row
+        </table>
+        ";
+
+        $filename = 'format-import/all-employees-'.date('Y-m-d').'.xls';
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Html();
+        $spreadsheet = $reader->loadFromString($html);
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer->save($filename); 
+
+        return redirect($filename);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

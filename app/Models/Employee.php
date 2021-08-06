@@ -70,6 +70,11 @@ class Employee extends Model
         return $this->hasOne('App\Models\Position', 'id', 'position_id');
     }
 
+    public function getJabatanAttribute()
+    {
+        return $this->position->name;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */

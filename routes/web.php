@@ -39,6 +39,7 @@ Route::middleware('installed')->group(function () {
             Route::resource('positions', PositionController::class);
             Route::get('employees/delete-all', [EmployeeController::class,'deleteAll'])->name('employees.delete-all');
             Route::post('employee/bulk-delete', [App\Http\Controllers\EmployeeController::class, 'bulkDelete'])->name('employee.bulk-delete');
+            Route::get('employees/export', [App\Http\Controllers\EmployeeController::class, 'export'])->name('employees.export');
             Route::resource('employees', EmployeeController::class);
             Route::resource('allowances', AllowanceController::class);
             Route::resource('sallaries', SallaryController::class);

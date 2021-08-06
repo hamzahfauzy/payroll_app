@@ -25,6 +25,10 @@
                                   {{ __('Import Karyawan') }}
                                 </a>
 
+                                <a href="{{ route('employees.export') }}" class="btn btn-success btn-sm">
+                                  {{ __('Export Karyawan') }}
+                                </a>
+
                                 <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
                                   {{ __('Buat Karyawan Baru') }}
                                 </a>
