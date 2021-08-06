@@ -36,6 +36,16 @@ Gaji Karyawan
                     <form action="" name="filter">
                         {!! Form::select('period', $periods, $period, ['required', 'class'=>'form-control','placeholder'=>'- Pilih Periode -','onchange'=>'filter.submit()']) !!}
                     </form>
+                    <br>
+                    @if(count($employeePeriods) || isset($_GET['keyword']))
+                    <form action="">
+                        <input type="hidden" name="period" value="{{$_GET['period']??0}}">
+                        <div class="form-group">
+                            <label for="">Cari Karyawan</label>
+                            <input type="text" value="{{isset($_GET['keyword'])?$_GET['keyword']:''}}" name="keyword" class="form-control" placeholder="Cari Berdasarkan ID, Nama, Area Kerja atau No Rekening Lalu Tekan Enter ...">
+                        </div>
+                    </form>
+                    @endif
                     <form action="{{route('employee-periods.bulk-download')}}" name="bulk-export" method="post">
                     @csrf
                     <input type="hidden" name="period" value="{{$_GET['period']??0}}">

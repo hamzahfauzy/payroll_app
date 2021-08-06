@@ -38,11 +38,17 @@
                     @endif
 
                     <div class="card-body">
+                        <form action="">
+                            <div class="form-group">
+                                <label for="">Cari Karyawan</label>
+                                <input type="text" value="{{isset($_GET['keyword'])?$_GET['keyword']:''}}" name="keyword" class="form-control" placeholder="Cari Berdasarkan ID, Nama, Area Kerja atau No Rekening Lalu Tekan Enter ...">
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
-                                        <th>No</th>
+                                        <th>#</th>
                                         
 										<th>Karyawan</th>
 										<th>Jabatan</th>
@@ -56,7 +62,7 @@
                                 <tbody>
                                     @foreach ($employees as $employee)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
+                                        <td><input type="checkbox" id="delete-check-{{$employee->id}}" onchange="setDelete(event)" value="{{$employee->id}}"></td>
                                             
 											<td>
                                                 {{ $employee->name }}
@@ -81,10 +87,38 @@
                                 </tbody>
                             </table>
                         </div>
+                        <form action="{{route('employee.bulk-delete')}}" name="bulk-export" method="post">
+                        @csrf
+                        <div id="hidden-field"></div>
+                        <button class="btn btn-success">Hapus Terpilih</button>
+                        </form>
                     </div>
                 </div>
                 {!! $employees->links() !!}
             </div>
         </div>
     </div>
+    <script>
+    var deleteId = []
+    function setDelete(e){
+        if(e.target.checked)
+            deleteId.push(e.target.value)
+        else
+        {
+            var index = deleteId.indexOf(e.target.value);
+            if (index !== -1) {
+                deleteId.splice(index, 1);
+            }
+        }
+        generateField()
+    }
+
+    function generateField()
+    {
+        document.getElementById('hidden-field').innerHTML = ''
+        deleteId.forEach(val => {
+            document.getElementById('hidden-field').innerHTML += '<input type="hidden" name="delete[]" value="'+val+'">'
+        })
+    }
+    </script>
 @endsection

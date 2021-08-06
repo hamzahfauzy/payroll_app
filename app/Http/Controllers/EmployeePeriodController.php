@@ -46,6 +46,20 @@ class EmployeePeriodController extends Controller
         }
 
         $employeePeriods = EmployeePeriod::where('period_id', $period)->paginate();
+        if(isset($_GET['keyword']) && !empty($_GET['keyword']))
+        {
+            $keyword = $_GET['keyword'];
+            $employeePeriods = EmployeePeriod::join('employees','employees.id','=','employee_periods.employee_id')
+                            ->where('employee_periods.period_id', $period)
+                            ->where('employees.NIK','like','%'.$keyword.'%')
+                            ->orwhere('employee_periods.period_id', $period)
+                            ->where('employees.name','like','%'.$keyword.'%')
+                            ->orwhere('employee_periods.period_id', $period)
+                            ->where('employees.work_around','like','%'.$keyword.'%')
+                            ->orwhere('employee_periods.period_id', $period)
+                            ->where('employees.bank_account','like','%'.$keyword.'%')
+                            ->paginate();
+        }
         $employeePeriods->appends(['period'=>$period]);
 
         return view('employee-period.index', compact('employeePeriods', 'period', 'periods'))

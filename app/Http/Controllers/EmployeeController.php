@@ -26,6 +26,16 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::paginate();
+        if(isset($_GET['keyword']) && !empty($_GET['keyword']))
+        {
+            $keyword = $_GET['keyword'];
+            $employees = Employee::join('positions','positions.id','=','employees.position_id')->where('employees.NIK','like','%'.$keyword.'%')
+                            ->orwhere('employees.name','like','%'.$keyword.'%')
+                            ->orwhere('employees.work_around','like','%'.$keyword.'%')
+                            ->orwhere('employees.bank_account','like','%'.$keyword.'%')
+                            ->orwhere('positions.name','like','%'.$keyword.'%')
+                            ->paginate();
+        }
 
         return view('employee.index', compact('employees'))
             ->with('i', (request()->input('page', 1) - 1) * $employees->perPage());
@@ -229,6 +239,13 @@ class EmployeeController extends Controller
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Employee::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        return redirect()->route('employees.index')
+            ->with('success', 'Employee deleted successfully');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        Employee::whereIn('id',$request->delete)->delete();
         return redirect()->route('employees.index')
             ->with('success', 'Employee deleted successfully');
     }
