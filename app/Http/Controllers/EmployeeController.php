@@ -50,12 +50,12 @@ class EmployeeController extends Controller
         {
             $employees_row .= "<tr>
             <td>".($key+1)."</td>
-            <td>".$employee->NIK."</td>
-            <td>".$employee->NPWP."</td>
+            <td>'".$employee->NIK."</td>
+            <td>'".$employee->NPWP."</td>
             <td>".$employee->name."</td>
             <td>".str_replace('&',' dan ', $employee->jabatan)."</td>
             <td>".$employee->work_around."</td>
-            <td>".$employee->bank_account."</td>
+            <td>'".$employee->bank_account."</td>
             <td>".$employee->main_sallary."</td>
             </tr>
             ";
