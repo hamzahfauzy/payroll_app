@@ -58,6 +58,7 @@ class EmployeePeriodController extends Controller
                             ->where('employees.work_around','like','%'.$keyword.'%')
                             ->orwhere('employee_periods.period_id', $period)
                             ->where('employees.bank_account','like','%'.$keyword.'%')
+                            ->select('employee_periods.*','employees.id as emp_id','employees.NIK','employees.name','employees.work_around','employees.bank_account')
                             ->paginate();
         }
         $employeePeriods->appends(['period'=>$period]);
