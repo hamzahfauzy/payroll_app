@@ -34,6 +34,7 @@ class EmployeeController extends Controller
                             ->orwhere('employees.work_around','like','%'.$keyword.'%')
                             ->orwhere('employees.bank_account','like','%'.$keyword.'%')
                             ->orwhere('positions.name','like','%'.$keyword.'%')
+                            ->select('employees.*','positions.id as pos_id','positions.name as pos_name')
                             ->paginate();
         }
 
