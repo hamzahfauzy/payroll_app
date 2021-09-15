@@ -118,7 +118,7 @@ class EmployeeController extends Controller
             //code...
             $user = User::create([
                 'name' => $request->name,
-                'email' => $request->NIK,
+                'email' => $request->username,
                 'password' => $request->password,
             ]);
             $data = $request->all();
@@ -183,7 +183,7 @@ class EmployeeController extends Controller
 
             $employee->user->update([
                 'name' => $request->name,
-                'email' => $request->NIK
+                'email' => $request->username
             ]);
 
             $employee->update($request->all());

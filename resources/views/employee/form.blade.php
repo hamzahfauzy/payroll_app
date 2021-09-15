@@ -37,6 +37,11 @@
             {!! $errors->first('main_sallary', '<div class="invalid-feedback">:message</p>') !!}
         </div>
         <div class="form-group">
+            {{ Form::label('Username') }}
+            <input type="text" name="username" value="{{$employee&&$employee->user?$employee->user->email:''}}" id="" class="form-control {{$errors->has('username') ? ' is-invalid' : ''}}" placeholder="Username">
+            {!! $errors->first('username', '<div class="invalid-feedback">:message</p>') !!}
+        </div>
+        <div class="form-group">
             {{ Form::label('Password') }}
             <input type="password" name="password" id="" class="form-control {{$errors->has('password') ? ' is-invalid' : ''}}" placeholder="Password">
             {!! $errors->first('password', '<div class="invalid-feedback">:message</p>') !!}
