@@ -30,7 +30,7 @@ Gaji Karyawan
                                 @foreach($employeePeriods as $employeePeriod)
                                 <tr>
                                     <td>{{ ++$i }}</td>
-                                    <td>{{ $employeePeriod->period->name }}</td>
+                                    <td>{{ $employeePeriod->period->name.' - '.$employeePeriod->period->year }}</td>
                                     <td>{{ $employeePeriod->sallary_total_format }}</td>
 
                                     <td>

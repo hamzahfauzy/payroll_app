@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                {!! $sallaries->links() !!}
+                {!! $sallaries->appends($_GET)->links() !!}
             </div>
         </div>
     </div>
