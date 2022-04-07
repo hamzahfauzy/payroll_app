@@ -73,7 +73,7 @@
 
                 <div class="form-group">
                     <label for="">NIK</label>
-                    <input type="text" name="NIK" required class="form-control @error('NIK') is-invalid @enderror" value="{{old('NIK') ? old('NIK') : Auth::user()->employee->NIK}}">
+                    <input type="number" name="NIK" required class="form-control @error('NIK') is-invalid @enderror" value="{{old('NIK') ? old('NIK') : Auth::user()->employee->NIK}}">
 
                     @error('NIK')
                     <span class="invalid-feedback" role="alert">
@@ -84,7 +84,7 @@
 
                 <div class="form-group">
                     <label for="">NPWP</label>
-                    <input type="text" name="NPWP" required class="form-control @error('NPWP') is-invalid @enderror" value="{{old('NPWP') ? old('NPWP') : Auth::user()->employee->NPWP}}">
+                    <input type="number" name="NPWP" required class="form-control @error('NPWP') is-invalid @enderror" value="{{old('NPWP') ? old('NPWP') : Auth::user()->employee->NPWP}}">
 
                     @error('NPWP')
                     <span class="invalid-feedback" role="alert">
