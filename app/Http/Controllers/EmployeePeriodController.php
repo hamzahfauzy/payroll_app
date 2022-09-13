@@ -30,6 +30,7 @@ class EmployeePeriodController extends Controller
     public function index()
     {
         $period = isset($_GET['period']) ? $_GET['period'] : 0;
+        $perPage = isset($_GET['per_page']) ? $_GET['per_page'] : 100;
         $periods = Period::select(
             DB::raw("CONCAT(name,' ',year) AS name_year"),'id')->get()->pluck('name_year', 'id');
         if ($period) {
@@ -46,7 +47,7 @@ class EmployeePeriodController extends Controller
             }
         }
 
-        $employeePeriods = EmployeePeriod::where('period_id', $period)->paginate();
+        $employeePeriods = EmployeePeriod::where('period_id', $period);
         if(isset($_GET['keyword']) && !empty($_GET['keyword']))
         {
             $keyword = $_GET['keyword'];
@@ -59,13 +60,14 @@ class EmployeePeriodController extends Controller
                             ->where('employees.work_around','like','%'.$keyword.'%')
                             ->orwhere('employee_periods.period_id', $period)
                             ->where('employees.bank_account','like','%'.$keyword.'%')
-                            ->select('employee_periods.*','employees.id as emp_id','employees.NIK','employees.name','employees.work_around','employees.bank_account')
-                            ->paginate(100);
+                            ->select('employee_periods.*','employees.id as emp_id','employees.NIK','employees.name','employees.work_around','employees.bank_account');
         }
-        $employeePeriods->appends(['period'=>$period]);
+        $employeePeriods = $employeePeriods->paginate($perPage)->withQueryString();
 
-        return view('employee-period.index', compact('employeePeriods', 'period', 'periods'))
-            ->with('i', (request()->input('page', 1) - 1) * $employeePeriods->perPage());
+        $perPages = ['10'=>10,'20'=>20,'50'=>50,'100'=>100,'200'=>200];
+
+        return view('employee-period.index', compact('employeePeriods', 'period', 'periods','perPages','perPage'))
+            ->with('i', (request()->input('page', 1) - 1) * $perPage);
     }
 
     /**

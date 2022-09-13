@@ -38,11 +38,15 @@ Gaji Karyawan
                     </form>
                     <br>
                     @if(count($employeePeriods) || isset($_GET['keyword']))
-                    <form action="">
+                    <form action="" name="filter2">
                         <input type="hidden" name="period" value="{{$_GET['period']??0}}">
                         <div class="form-group">
                             <label for="">Cari Karyawan</label>
                             <input type="text" value="{{isset($_GET['keyword'])?$_GET['keyword']:''}}" name="keyword" class="form-control" placeholder="Cari Berdasarkan ID, Nama, Area Kerja atau No Rekening Lalu Tekan Enter ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Jumlah Data</label>
+                            {!! Form::select('per_page', $perPages, $perPage, ['required', 'class'=>'form-control','placeholder'=>'- Pilih Jumlah Data -','onchange'=>'filter2.submit()']) !!}
                         </div>
                     </form>
                     @endif
