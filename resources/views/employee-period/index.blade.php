@@ -89,6 +89,7 @@ Gaji Karyawan
                             </tbody>
                         </table>
                         @if(count($employeePeriods))
+                        <button class="btn btn-danger" name="action" value="hapus">Hapus Terpilih</button>
                         <button class="btn btn-success" name="action" value="terpilih">Download Terpilih</button>
                         <button class="btn btn-success" name="action" value="semua">Download Semua</button>
                         @endif

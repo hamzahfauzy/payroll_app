@@ -30,7 +30,8 @@ class EmployeePeriodController extends Controller
     public function index()
     {
         $period = isset($_GET['period']) ? $_GET['period'] : 0;
-        $periods = Period::get()->pluck('name', 'id');
+        $periods = Period::select(
+            DB::raw("CONCAT(name,' ',year) AS name_year"),'id')->get()->pluck('name_year', 'id');
         if ($period) {
             // generate record by period
             $employees = Employee::get();
@@ -59,7 +60,7 @@ class EmployeePeriodController extends Controller
                             ->orwhere('employee_periods.period_id', $period)
                             ->where('employees.bank_account','like','%'.$keyword.'%')
                             ->select('employee_periods.*','employees.id as emp_id','employees.NIK','employees.name','employees.work_around','employees.bank_account')
-                            ->paginate();
+                            ->paginate(100);
         }
         $employeePeriods->appends(['period'=>$period]);
 
@@ -348,7 +349,8 @@ class EmployeePeriodController extends Controller
                 throw $th;
             }
         }
-        $periods = Period::get()->pluck('name', 'id');
+        $periods = Period::select(
+            DB::raw("CONCAT(name,' ',year) AS name_year"),'id')->get()->pluck('name_year', 'id');
         return view('employee-period.import',compact('periods'));
     }
 
@@ -403,6 +405,23 @@ class EmployeePeriodController extends Controller
     }
 
     public function bulkdownload(Request $request){
+
+        if(in_array($request->action,['terpilih','hapus']))
+        {
+            $request->validate([
+                'download' => 'required|array',
+                'download.*' => 'required|exists:employee_periods,id'
+            ]);
+
+            if($request->action == 'hapus')
+            {
+                $employee = EmployeePeriod::whereIn('id',$request->download)->pluck('employee_id');
+                EmployeeSallary::whereIn('employee_id',$employee)->where('period_id',$request->period)->delete();
+                EmployeePeriod::whereIn('id',$request->download)->delete();
+                return redirect()->route('employee-periods.index',['period'=>$request->period])
+                    ->with('success', 'EmployeePeriod bulk deleted successfully');
+            }
+        }
 
         $period = Period::find($request->period);
 
