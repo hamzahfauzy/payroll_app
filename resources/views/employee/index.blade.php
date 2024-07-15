@@ -42,8 +42,17 @@
                     @endif
 
                     <div class="card-body">
-                        <form action="">
+                        <form action="" name="filterform" class="d-flex" style="gap:10px">
                             <div class="form-group">
+                                <label for="">Tampilkan</label>
+                                <select name="per_page" class="form-control" onchange="filterform.submit()">
+                                    <option {{isset($_GET['per_page']) && $_GET['per_page'] == 10?'selected=""':''}}>10</option>
+                                    <option {{!isset($_GET['per_page']) || $_GET['per_page'] == 25?'selected=""':''}}>25</option>
+                                    <option {{isset($_GET['per_page']) && $_GET['per_page'] == 50?'selected=""':''}}>50</option>
+                                    <option {{isset($_GET['per_page']) && $_GET['per_page'] == 100?'selected=""':''}}>100</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-grow-1">
                                 <label for="">Cari Karyawan</label>
                                 <input type="text" value="{{isset($_GET['keyword'])?$_GET['keyword']:''}}" name="keyword" class="form-control" placeholder="Cari Berdasarkan ID, Nama, Area Kerja atau No Rekening Lalu Tekan Enter ...">
                             </div>
