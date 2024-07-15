@@ -75,7 +75,7 @@
                                 <tbody>
                                     @foreach ($employees as $employee)
                                         <tr>
-                                        <td><input type="checkbox" id="delete-check-{{$employee->id}}" onchange="setDelete(event)" value="{{$employee->id}}"></td>
+                                        <td><input class="employee-checkbox" type="checkbox" id="delete-check-{{$employee->id}}" onchange="setDelete(event)" value="{{$employee->id}}"></td>
                                             
 											<td>
                                                 {{ $employee->name }}
@@ -103,6 +103,7 @@
                         <form action="{{route('employee.bulk-delete')}}" name="bulk-export" method="post">
                         @csrf
                         <div id="hidden-field"></div>
+                        <button type="button" class="btn btn-success" onclick="checkAll()">Check All</button>
                         <button class="btn btn-success">Hapus Terpilih</button>
                         </form>
                     </div>
@@ -131,6 +132,13 @@
         document.getElementById('hidden-field').innerHTML = ''
         deleteId.forEach(val => {
             document.getElementById('hidden-field').innerHTML += '<input type="hidden" name="delete[]" value="'+val+'">'
+        })
+    }
+
+    function checkAll()
+    {
+        document.querySelectorAll('.employee-checkbox').forEach(el => {
+            el.checked = true
         })
     }
     </script>
