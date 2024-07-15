@@ -25,7 +25,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $perpage = request('per_page', 20);
+        $perpage = request('per_page', 25);
         $employees = Employee::paginate($perpage);
         if(isset($_GET['keyword']) && !empty($_GET['keyword']))
         {
